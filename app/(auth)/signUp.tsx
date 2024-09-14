@@ -3,11 +3,13 @@
 import React from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { register } from "../../services/auth"; // Import the register function
+import { register } from "@services/auth"; // Import the register function
 import { Link, router } from "expo-router";
 
 interface SignUpForm {
   email: string;
+  displayName: string;
+  username: string;
   password: string;
   confirmPassword: string;
 }
@@ -28,7 +30,12 @@ const SignUp: React.FC = () => {
     }
 
     try {
-      await register(data.email, data.password);
+      await register(
+        data.email,
+        data.password,
+        data.displayName,
+        data.username
+      );
       // Alert.alert("Success", "Account created successfully!");
       router.replace("/(home)/(tabs)");
       // Navigate to Home or Login screen here
@@ -61,6 +68,42 @@ const SignUp: React.FC = () => {
       />
       {errors.email && (
         <Text style={styles.errorText}>{errors.email.message}</Text>
+      )}
+      <Controller
+        control={control}
+        name="username"
+        rules={{ required: "Username is required" }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style={styles.input}
+            placeholder="Username"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            keyboardType="email-address"
+          />
+        )}
+      />
+      {errors.username && (
+        <Text style={styles.errorText}>{errors.username.message}</Text>
+      )}
+      <Controller
+        control={control}
+        name="displayName"
+        rules={{ required: "Display Name is required" }}
+        render={({ field: { onChange, onBlur, value } }) => (
+          <TextInput
+            style={styles.input}
+            placeholder="Display Name"
+            onBlur={onBlur}
+            onChangeText={onChange}
+            value={value}
+            keyboardType="email-address"
+          />
+        )}
+      />
+      {errors.displayName && (
+        <Text style={styles.errorText}>{errors.displayName.message}</Text>
       )}
 
       <Controller

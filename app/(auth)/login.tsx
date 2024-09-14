@@ -3,11 +3,11 @@
 import React from "react";
 import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { login } from "../../services/auth"; // Import the login function
+import { login } from "@services/auth";
 import { Link, router } from "expo-router";
 
 interface LoginForm {
-  email: string;
+  identifier: string;
   password: string;
 }
 
@@ -20,7 +20,7 @@ const Login: React.FC = () => {
 
   const onSubmit = async (data: LoginForm) => {
     try {
-      await login(data.email, data.password);
+      await login(data.identifier, data.password);
       // Alert.alert("Success", "You are logged in!");
       router.replace("/(home)/(tabs)");
       // Navigate to Home or Dashboard screen here
@@ -38,12 +38,12 @@ const Login: React.FC = () => {
 
       <Controller
         control={control}
-        name="email"
+        name="identifier"
         rules={{ required: "Email is required" }}
         render={({ field: { onChange, onBlur, value } }) => (
           <TextInput
             style={styles.input}
-            placeholder="Email"
+            placeholder="Email or Username"
             onBlur={onBlur}
             onChangeText={onChange}
             value={value}
@@ -51,8 +51,8 @@ const Login: React.FC = () => {
           />
         )}
       />
-      {errors.email && (
-        <Text style={styles.errorText}>{errors.email.message}</Text>
+      {errors.identifier && (
+        <Text style={styles.errorText}>{errors.identifier.message}</Text>
       )}
 
       <Controller
