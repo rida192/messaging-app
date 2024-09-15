@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Text, View, TextInput, Image, Button } from "react-native";
 import { auth, db } from "@services/firebaseConfig";
 import { User, updateProfile } from "firebase/auth";
@@ -11,6 +11,7 @@ const ProfileTabScreen = () => {
   const [user, setUser] = useState<User | null>(null);
   const [displayName, setDisplayName] = useState("");
   const [photoURL, setPhotoURL] = useState("");
+  const inputRef = useRef<TextInput>(null); // Reference to the input field for focusing
 
   useEffect(() => {
     // Get the current user from Firebase Auth
@@ -78,6 +79,8 @@ const ProfileTabScreen = () => {
 
       // Update the user's Firestore document
       await updateDoc(doc(db, "users", user.uid), { displayName });
+      // Unfocus the input field
+      inputRef.current?.blur();
     }
   };
 
@@ -101,6 +104,7 @@ const ProfileTabScreen = () => {
 
       <TextInput
         placeholder="Display Name"
+        ref={inputRef}
         value={displayName}
         onChangeText={(text) => setDisplayName(text)}
       />
