@@ -88,7 +88,7 @@ const ProfileTabScreen = () => {
     return <Text>Loading user data...</Text>;
   }
 
-  console.log(user);
+  // console.log(user);
   return (
     <View>
       <Text>Email: {user.email}</Text>

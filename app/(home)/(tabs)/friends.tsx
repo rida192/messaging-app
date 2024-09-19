@@ -1,29 +1,36 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, Button, FlatList } from "react-native";
 import {
-  getFriendRequests,
-  getFriends,
   acceptFriendRequest,
   rejectFriendRequest,
+  listenToFriendRequests,
+  listenToFriends,
 } from "@services/friendService";
+import SearchFriends from "../../../components/searchFriends";
 
 const FriendsTabScreen = () => {
   const [friendRequests, setFriendRequests] = useState([]);
   const [friends, setFriends] = useState([]);
 
   useEffect(() => {
-    // Fetch friend requests and friends on component mount
-    const fetchFriendData = async () => {
-      try {
-        const requests = await getFriendRequests();
-        const friendsList = await getFriends();
-        setFriendRequests(requests);
-        setFriends(friendsList);
-      } catch (error) {
-        console.error("Error fetching friend data:", error);
-      }
+    // Set up real-time listeners
+    const unsubscribeFriendRequests = listenToFriendRequests((requests) => {
+      // Only include pending requests
+      const pendingRequests = requests.filter(
+        (req) => req.status === "pending"
+      );
+      setFriendRequests(pendingRequests);
+    });
+
+    const unsubscribeFriends = listenToFriends((friendsList) => {
+      setFriends(friendsList);
+    });
+
+    // Clean up listeners on component unmount
+    return () => {
+      if (unsubscribeFriendRequests) unsubscribeFriendRequests();
+      if (unsubscribeFriends) unsubscribeFriends();
     };
-    fetchFriendData();
   }, []);
 
   const handleAcceptFriendRequest = async (
@@ -34,14 +41,6 @@ const FriendsTabScreen = () => {
   ) => {
     try {
       await acceptFriendRequest(requestId, fromUserId, toUserId);
-      // Update UI
-      setFriendRequests((prevRequests) =>
-        prevRequests.filter((request) => request.id !== requestId)
-      );
-      setFriends((prevFriends) => [
-        ...prevFriends,
-        { id: toUserId, displayName: displayName },
-      ]);
     } catch (error) {
       console.error("Error accepting friend request:", error);
     }
@@ -50,10 +49,6 @@ const FriendsTabScreen = () => {
   const handleRejectFriendRequest = async (requestId) => {
     try {
       await rejectFriendRequest(requestId);
-      // Update UI
-      setFriendRequests((prevRequests) =>
-        prevRequests.filter((request) => request.id !== requestId)
-      );
     } catch (error) {
       console.error("Error rejecting friend request:", error);
     }
@@ -61,6 +56,7 @@ const FriendsTabScreen = () => {
 
   return (
     <View>
+      <SearchFriends />
       <Text>Friend Requests</Text>
       <FlatList
         data={friendRequests}

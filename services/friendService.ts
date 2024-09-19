@@ -9,14 +9,20 @@ import {
   getDocs,
   query,
   where,
+  onSnapshot,
 } from "firebase/firestore";
 
-const sendFriendRequest = async (fromUserId: string, toUserId: string) => {
+const sendFriendRequest = async (
+  fromUserId: string,
+  toUserId: string,
+  displayName: string
+) => {
   try {
     const friendRequestsRef = collection(db, "friendRequests");
     await addDoc(friendRequestsRef, {
       fromUserId,
       toUserId,
+      displayName,
       status: "pending", // The status can be 'pending', 'accepted', or 'rejected'
       createdAt: Timestamp.now(),
     });
@@ -66,23 +72,21 @@ const rejectFriendRequest = async (requestId: string) => {
 
 // Function to get incoming friend requests for the current user
 const getFriendRequests = async () => {
-  if (!auth.currentUser) throw new Error("User not authenticated");
+  const currentUser = auth.currentUser;
 
-  const userId = auth.currentUser.uid;
+  if (!currentUser) return [];
 
-  // Query the friendRequests collection for requests where the current user is the recipient and the status is 'pending'
-  const q = query(
+  const friendRequestsQuery = query(
     collection(db, "friendRequests"),
-    where("recipientId", "==", userId),
-    where("status", "==", "pending")
+    where("toUserId", "==", currentUser.uid),
+    where("status", "==", "pending") // Only fetch pending requests
   );
 
-  const querySnapshot = await getDocs(q);
-  const friendRequests = querySnapshot.docs.map((doc) => ({
+  const querySnapshot = await getDocs(friendRequestsQuery);
+  return querySnapshot.docs.map((doc) => ({
     id: doc.id,
     ...doc.data(),
   }));
-  return friendRequests;
 };
 
 // Function to get the list of friends for the current user
@@ -102,10 +106,73 @@ const getFriends = async () => {
   return friends;
 };
 
+const searchUsers = async (searchTerm: string) => {
+  try {
+    const usersRef = collection(db, "users");
+    const q = query(
+      usersRef,
+      where("username", ">=", searchTerm),
+      where("username", "<=", searchTerm + "\uf8ff")
+    );
+    const querySnapshot = await getDocs(q);
+
+    const users = [];
+    querySnapshot.forEach((doc) => {
+      users.push({ id: doc.id, ...doc.data() });
+    });
+
+    return users;
+  } catch (error) {
+    console.error("Error searching for users:", error);
+    throw error;
+  }
+};
+
+// Real-time function to get incoming friend requests
+const listenToFriendRequests = (onUpdate) => {
+  const currentUser = auth.currentUser;
+
+  if (!currentUser) return;
+
+  const friendRequestsQuery = query(
+    collection(db, "friendRequests"),
+    where("toUserId", "==", currentUser.uid)
+  );
+
+  // Listen for real-time updates
+  return onSnapshot(friendRequestsQuery, (snapshot) => {
+    const requests = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    onUpdate(requests);
+  });
+};
+
+// Real-time function to get the list of friends
+const listenToFriends = (onUpdate) => {
+  if (!auth.currentUser) return;
+
+  const userId = auth.currentUser.uid;
+
+  const friendsQuery = collection(db, "users", userId, "friends");
+
+  // Listen for real-time updates
+  return onSnapshot(friendsQuery, (snapshot) => {
+    const friends = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    onUpdate(friends);
+  });
+};
 export {
   sendFriendRequest,
   acceptFriendRequest,
   rejectFriendRequest,
   getFriends,
   getFriendRequests,
+  searchUsers,
+  listenToFriendRequests, // Export real-time functions
+  listenToFriends, // Export real-time functions
 };
