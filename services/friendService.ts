@@ -10,6 +10,7 @@ import {
   query,
   where,
   onSnapshot,
+  getDoc,
 } from "firebase/firestore";
 
 const sendFriendRequest = async (
@@ -154,15 +155,22 @@ const listenToFriends = (onUpdate) => {
   if (!auth.currentUser) return;
 
   const userId = auth.currentUser.uid;
-
   const friendsQuery = collection(db, "users", userId, "friends");
 
   // Listen for real-time updates
-  return onSnapshot(friendsQuery, (snapshot) => {
-    const friends = snapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    }));
+  return onSnapshot(friendsQuery, async (snapshot) => {
+    const friends = [];
+
+    for (const docSnapshot of snapshot.docs) {
+      const friendId = docSnapshot.data().friendId;
+      const userRef = doc(db, "users", friendId);
+      const userSnapshot = await getDoc(userRef);
+      if (userSnapshot.exists()) {
+        friends.push({ id: friendId, ...userSnapshot.data() });
+      }
+    }
+
+    // Call the onUpdate function with the user data
     onUpdate(friends);
   });
 };

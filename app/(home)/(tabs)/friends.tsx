@@ -1,16 +1,16 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, Button, FlatList } from "react-native";
+import { View, Text, Button, FlatList, Image } from "react-native";
 import {
   acceptFriendRequest,
   rejectFriendRequest,
   listenToFriendRequests,
   listenToFriends,
 } from "@services/friendService";
-import SearchFriends from "../../../components/searchFriends";
+import SearchFriends from "@components/searchFriends";
 
 const FriendsTabScreen = () => {
-  const [friendRequests, setFriendRequests] = useState([]);
-  const [friends, setFriends] = useState([]);
+  const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
+  const [friends, setFriends] = useState<Friend[]>([]);
 
   useEffect(() => {
     // Set up real-time listeners
@@ -33,12 +33,7 @@ const FriendsTabScreen = () => {
     };
   }, []);
 
-  const handleAcceptFriendRequest = async (
-    requestId,
-    fromUserId,
-    toUserId,
-    displayName
-  ) => {
+  const handleAcceptFriendRequest = async (requestId, fromUserId, toUserId) => {
     try {
       await acceptFriendRequest(requestId, fromUserId, toUserId);
     } catch (error) {
@@ -60,7 +55,7 @@ const FriendsTabScreen = () => {
       <Text>Friend Requests</Text>
       <FlatList
         data={friendRequests}
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: FriendRequest }) => (
           <View>
             <Text>{item.displayName}</Text>
             <Button
@@ -69,8 +64,7 @@ const FriendsTabScreen = () => {
                 handleAcceptFriendRequest(
                   item.id,
                   item.fromUserId,
-                  item.toUserId,
-                  item.displayName
+                  item.toUserId
                 )
               }
             />
@@ -86,9 +80,15 @@ const FriendsTabScreen = () => {
       <Text>Friends</Text>
       <FlatList
         data={friends}
-        renderItem={({ item }) => (
+        renderItem={({ item }: { item: Friend }) => (
           <View>
             <Text>{item.displayName}</Text>
+            {item.photoURL && (
+              <Image
+                source={{ uri: item.photoURL }}
+                style={{ width: 50, height: 50 }}
+              />
+            )}
           </View>
         )}
         keyExtractor={(item) => item.id}
