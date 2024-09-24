@@ -123,10 +123,11 @@ export const useAuthState = () => {
       if (user) {
         // If a user is logged in, navigate to the Home screen
         router.push("/(home)/(tabs)");
-      } else {
-        // If no user is logged in, stay on the Login screen
-        router.push("/login");
       }
+      //  else {
+      //   // If no user is logged in, stay on the Login screen
+      //   router.push("/login");
+      // }
     });
 
     // Cleanup the listener on unmount
