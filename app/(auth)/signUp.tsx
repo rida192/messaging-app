@@ -49,7 +49,9 @@ const SignUp: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
+      <Text className="text-lg text-center text-[#3D4A7A] font-bold font-[Poppins]">
+        Sign up with Email
+      </Text>
 
       <Controller
         control={control}
