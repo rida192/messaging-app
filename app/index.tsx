@@ -1,10 +1,9 @@
-import { View, Text, ActivityIndicator, TouchableOpacity } from "react-native";
+import { Text, TouchableOpacity, Image } from "react-native";
 import { useAuthState } from "../services/auth";
 import { useFonts } from "expo-font";
 import { LinearGradient } from "expo-linear-gradient";
 
 import { styled } from "nativewind";
-import { BlurView } from "expo-blur";
 import { Link } from "expo-router";
 
 const GradientBackground = styled(LinearGradient);
@@ -20,18 +19,15 @@ const index = () => {
   // return <Redirect href="/(auth)/login" />;
   return (
     <GradientBackground
-      colors={["#1e264a", "#46568b"]}
+      colors={["#0a0922", "#3c4a7a"]}
       start={{ x: 0.0, y: 0.25 }}
       end={{ x: 1, y: 1.0 }}
       locations={[0.4, 1]}
-      className="px-6 flex-1"
+      className="px-6 flex-1 "
     >
-      <GradientBackground
-        colors={["#43116A", "#68E1FD"]}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        locations={[0.4, 1]}
-        className="flex-1 justify-center items-center absolute top-0 -left-20 w-[577.31px] h-[244.52px] rotate-[134deg] rounded-full opacity-20"
+      <Image
+        className="absolute top-10 left-0 w-[577.31px] h-[244.52px] opacity-70"
+        source={require("../assets/images/ellipse.png")}
       />
       <Text className="text-7xl mt-[85px] mb-[39px] font-[Poppins] p-2 leading-[78px] text-white">
         Connect friends easily & quickly
