@@ -1,10 +1,20 @@
-// app/(auth)/SignUp.tsx
-
 import React from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import { useForm, Controller } from "react-hook-form";
-import { register } from "@services/auth"; // Import the register function
-import { Link, router } from "expo-router";
+import { register } from "@services/auth";
+import { router } from "expo-router";
+
+import { LinearGradient } from "expo-linear-gradient";
+import { styled } from "nativewind";
+
+const GradientBackground = styled(LinearGradient);
 
 interface SignUpForm {
   email: string;
@@ -48,7 +58,7 @@ const SignUp: React.FC = () => {
   };
 
   return (
-    <View style={styles.container}>
+    <View className="flex-1 justify-center p-5">
       <Text className="text-lg text-center text-[#3D4A7A] font-bold font-[Poppins]">
         Sign up with Email
       </Text>
@@ -146,24 +156,33 @@ const SignUp: React.FC = () => {
         <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>
       )}
 
-      <Button
-        title={isSubmitting ? "Signing up..." : "Sign Up"}
-        onPress={handleSubmit(onSubmit)}
-        disabled={isSubmitting}
-      />
-
-      <Text className="mt-5">
-        Already have an account? <Link href="/(auth)/login">Login</Link>{" "}
-      </Text>
+      <GradientBackground
+        colors={["#0a0922", "#3c4a7a"]}
+        start={{ x: 0.0, y: 0.25 }}
+        end={{ x: 1, y: 1.0 }}
+        locations={[0.4, 1]}
+        className="py-4 rounded-2xl mt-24 "
+      >
+        <TouchableOpacity
+          onPress={handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+        >
+          <Text className="text-white text-center text-base font-bold font-[Poppins]">
+            {isSubmitting ? "Signing up..." : "Create an account"}
+          </Text>
+        </TouchableOpacity>
+      </GradientBackground>
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", padding: 20 },
-  title: { fontSize: 24, marginBottom: 20, textAlign: "center" },
   input: {
     borderWidth: 1,
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderBottomColor: "#3D4A7A",
     borderColor: "#ccc",
     padding: 10,
     marginBottom: 10,

@@ -33,7 +33,7 @@ const index = () => {
       />
 
       <Text className="text-7xl mt-[85px] mb-[39px] font-[Poppins] p-2 leading-[78px] text-white px-6">
-        Connect friends easily & quickly
+        Connect with friends easily & quickly
       </Text>
       <Text className="text-base opacity-70 max-w-[330px] text-white px-6">
         Our chat app is the perfect way to stay connected with friends and
