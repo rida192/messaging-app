@@ -1,10 +1,22 @@
 // app/(auth)/Login.tsx
 
-import React from "react";
-import { View, Text, TextInput, Button, StyleSheet, Alert } from "react-native";
+import React, { useEffect } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  Alert,
+  TouchableOpacity,
+} from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { login } from "@services/auth";
-import { Link, router } from "expo-router";
+import { useRouter } from "expo-router";
+
+import { LinearGradient } from "expo-linear-gradient";
+import { styled } from "nativewind";
+
+const GradientBackground = styled(LinearGradient);
 
 interface LoginForm {
   identifier: string;
@@ -12,18 +24,25 @@ interface LoginForm {
 }
 
 const Login: React.FC = () => {
+  const router = useRouter();
   const {
     control,
     handleSubmit,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<LoginForm>();
+
+  useEffect(() => {
+    reset({
+      identifier: "",
+      password: "",
+    });
+  }, []);
 
   const onSubmit = async (data: LoginForm) => {
     try {
       await login(data.identifier, data.password);
-      // Alert.alert("Success", "You are logged in!");
-      router.replace("/(home)/(tabs)");
-      // Navigate to Home or Dashboard screen here
+      router.replace("/(tabs)/chats");
     } catch (error) {
       Alert.alert(
         "Login Error",
@@ -34,7 +53,9 @@ const Login: React.FC = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
+      <Text className="text-lg text-center text-[#3D4A7A] font-bold font-[Poppins]">
+        Login
+      </Text>
 
       <Controller
         control={control}
@@ -74,14 +95,22 @@ const Login: React.FC = () => {
         <Text style={styles.errorText}>{errors.password.message}</Text>
       )}
 
-      <Button
-        title={isSubmitting ? "Logging in..." : "Login"}
-        onPress={handleSubmit(onSubmit)}
-        disabled={isSubmitting}
-      />
-      <Text className="mt-5">
-        Don't have an account? <Link href="/(auth)/signUp">signup</Link>{" "}
-      </Text>
+      <GradientBackground
+        colors={["#0a0922", "#3c4a7a"]}
+        start={{ x: 0.0, y: 0.25 }}
+        end={{ x: 1, y: 1.0 }}
+        locations={[0.4, 1]}
+        className="py-4 rounded-2xl mt-24 "
+      >
+        <TouchableOpacity
+          onPress={handleSubmit(onSubmit)}
+          disabled={isSubmitting}
+        >
+          <Text className="text-white text-center text-base font-bold font-[Poppins]">
+            {isSubmitting ? "Logging in..." : "Login"}
+          </Text>
+        </TouchableOpacity>
+      </GradientBackground>
     </View>
   );
 };
@@ -91,6 +120,10 @@ const styles = StyleSheet.create({
   title: { fontSize: 24, marginBottom: 20, textAlign: "center" },
   input: {
     borderWidth: 1,
+    borderTopWidth: 0,
+    borderLeftWidth: 0,
+    borderRightWidth: 0,
+    borderBottomColor: "#3D4A7A",
     borderColor: "#ccc",
     padding: 10,
     marginBottom: 10,

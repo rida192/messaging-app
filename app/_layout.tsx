@@ -1,6 +1,7 @@
+import { useAuthState } from "@services/auth";
 import { Stack } from "expo-router";
-import { View } from "react-native";
 const RootLayout = () => {
+  useAuthState();
   return (
     <Stack>
       <Stack.Screen name="index" options={{ headerShown: false }} />
@@ -9,6 +10,14 @@ const RootLayout = () => {
         options={{
           title: "",
           headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
+        name="(tabs)"
+        options={{
+          title: "",
+          headerTransparent: true,
+          headerShown: false,
         }}
       />
     </Stack>

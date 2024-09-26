@@ -7,7 +7,7 @@ const TabsNavigator = () => {
   return (
     <Tabs>
       <Tabs.Screen
-        name="index"
+        name="chats"
         options={{
           title: "Chats",
           tabBarIcon: ({ size, color }) => (

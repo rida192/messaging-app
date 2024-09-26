@@ -8,7 +8,7 @@ import {
   UserCredential,
   onAuthStateChanged,
 } from "firebase/auth";
-import { router } from "expo-router";
+import { useRouter, useSegments } from "expo-router";
 import {
   collection,
   doc,
@@ -110,6 +110,7 @@ const login = async (
 const logout = async (): Promise<void> => {
   try {
     await signOut(auth);
+    // router.push("/"); // Navigate to welcome screen
   } catch (error) {
     console.error("Error logging out:", error);
     throw error;
@@ -118,16 +119,23 @@ const logout = async (): Promise<void> => {
 
 // Custom hook to monitor authentication state
 export const useAuthState = () => {
+  const router = useRouter();
+  // const segments = useSegments(); // Use segments to get the current route
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      console.log("Auth state changed: ", user); // Check when this runs
       if (user) {
         // If a user is logged in, navigate to the Home screen
-        router.push("/(home)/(tabs)");
+
+        console.log("User is authenticated. Navigating to home...");
+        router.push("/(tabs)/chats");
+      } else {
+        // If no user is logged in, stay on the Login screen
+
+        console.log("User is not authenticated. Navigating to welcome...");
+        router.push("/");
       }
-      //  else {
-      //   // If no user is logged in, stay on the Login screen
-      //   router.push("/login");
-      // }
     });
 
     // Cleanup the listener on unmount

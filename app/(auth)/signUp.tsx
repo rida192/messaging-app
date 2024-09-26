@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { register } from "@services/auth";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 
 import { LinearGradient } from "expo-linear-gradient";
 import { styled } from "nativewind";
@@ -25,6 +25,7 @@ interface SignUpForm {
 }
 
 const SignUp: React.FC = () => {
+  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -46,9 +47,7 @@ const SignUp: React.FC = () => {
         data.displayName,
         data.username
       );
-      // Alert.alert("Success", "Account created successfully!");
-      router.replace("/(home)/(tabs)");
-      // Navigate to Home or Login screen here
+      router.replace("/(tabs)");
     } catch (error) {
       Alert.alert(
         "Sign Up Error",
