@@ -174,6 +174,42 @@ const listenToFriends = (onUpdate) => {
     onUpdate(friends);
   });
 };
+
+// Fetching chats for a user
+const fetchFriendsWithLastMessages = async (userId: string) => {
+  try {
+    // Query to get chats where the user is a participant
+    const chatsRef = collection(db, "chats");
+    const q = query(chatsRef, where("participants", "array-contains", userId));
+
+    const querySnapshot = await getDocs(q);
+    const friends = [];
+
+    for (const docSnap of querySnapshot.docs) {
+      const chatData = docSnap.data();
+      const friendId = chatData.participants.find((id) => id !== userId); // Get the other participant
+
+      // Fetch friend's user data
+      const friendDoc = await getDoc(doc(db, `users/${friendId}`));
+      const friendData = friendDoc.data();
+
+      if (friendData) {
+        friends.push({
+          chatId: docSnap.id,
+          displayName: friendData.displayName,
+          photoURL: friendData.photoURL,
+          lastMessage: chatData.lastMessage,
+        });
+      }
+    }
+
+    return friends;
+  } catch (error) {
+    console.error("Error fetching friends with last messages:", error);
+    return [];
+  }
+};
+
 export {
   sendFriendRequest,
   acceptFriendRequest,
@@ -183,4 +219,5 @@ export {
   searchUsers,
   listenToFriendRequests, // Export real-time functions
   listenToFriends, // Export real-time functions
+  fetchFriendsWithLastMessages,
 };
