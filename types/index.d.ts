@@ -26,7 +26,7 @@ declare interface LastMessage {
 }
 
 // Type for the main object
-declare interface UserData {
+declare interface Friend {
   createdAt: Timestamp | Date; // Depending on how you retrieve it from Firestore, it could be a Timestamp or Date
   displayName: string;
   email: string;
@@ -34,4 +34,12 @@ declare interface UserData {
   lastMessage: LastMessage;
   photoURL: string;
   username: string;
+}
+
+declare interface Message {
+  id: string;
+  text: string;
+  timestamp: Timestamp | Date;
+  senderId: string;
+  displayName: string;
 }

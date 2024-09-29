@@ -21,13 +21,14 @@ import {
   setDoc,
 } from "firebase/firestore";
 import { useLocalSearchParams } from "expo-router";
+import { Message } from "../../../types";
 
 const ChatScreen = () => {
   const { chatId } = useLocalSearchParams();
   // console.log(chatId);
   // const { chatId } = route.params; // Assuming chatId is passed as route param
   const user = auth.currentUser; // Get the current user
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
 
   useEffect(() => {
@@ -39,8 +40,7 @@ const ChatScreen = () => {
         id: doc.id,
         ...doc.data(),
       }));
-      // console.log("Messages:", messagesList);
-      setMessages(messagesList);
+      setMessages(messagesList as Message[]);
     });
 
     // Clean up the listener on component unmount
@@ -107,7 +107,10 @@ const ChatScreen = () => {
             <Text style={styles.senderName}>{item.displayName}</Text>
             <Text>{item.text}</Text>
             <Text style={styles.timestamp}>
-              {item.timestamp.toDate().toLocaleTimeString()}
+              {(item.timestamp instanceof Date
+                ? item.timestamp
+                : item.timestamp.toDate()
+              ).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
             </Text>
           </View>
         )}
