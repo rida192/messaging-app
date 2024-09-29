@@ -26,7 +26,29 @@ const FriendLable = ({ item }: { item: Friend }) => {
           <View>
             <Text style={styles.lastMessage}>{item.lastMessage.text}</Text>
             <Text style={styles.timestamp}>
-              {new Date(item.lastMessage.timestamp.toDate()).toLocaleString()}
+              {(() => {
+                const messageDate = item.lastMessage.timestamp.toDate();
+                const now = new Date();
+                const yesterday = new Date(now);
+                yesterday.setDate(yesterday.getDate() - 1);
+
+                if (messageDate.toDateString() === now.toDateString()) {
+                  return messageDate.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                } else if (
+                  messageDate.toDateString() === yesterday.toDateString()
+                ) {
+                  return "Yesterday";
+                } else {
+                  return messageDate.toLocaleDateString([], {
+                    month: "numeric",
+                    day: "2-digit",
+                    year: "2-digit",
+                  });
+                }
+              })()}
             </Text>
           </View>
         ) : (
