@@ -43,3 +43,5 @@ declare interface Message {
   senderId: string;
   displayName: string;
 }
+
+// Main type for the object
