@@ -6,6 +6,7 @@ import { getStorage, getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { storage } from "@services/firebaseConfig";
 import * as ImagePicker from "expo-image-picker";
 import { doc, updateDoc } from "firebase/firestore";
+import { logout } from "@services/auth";
 
 const ProfileTabScreen = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -109,6 +110,13 @@ const ProfileTabScreen = () => {
         onChangeText={(text) => setDisplayName(text)}
       />
       <Button title="Change Display Name" onPress={handleChangeDisplayName} />
+
+      <Button
+        title="logout"
+        onPress={async () => {
+          await logout();
+        }}
+      />
     </View>
   );
 };

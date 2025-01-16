@@ -8,22 +8,22 @@ const Layout = () => {
       <Stack.Screen
         name="index"
         options={{
-          title: "Chats",
-          headerLargeTitle: true,
-          headerTransparent: true,
-          headerBlurEffect: "regular",
-          headerLeft: () => (
-            <TouchableOpacity>
-              <Ionicons name="ellipsis-horizontal-circle-outline" size={30} />
-            </TouchableOpacity>
-          ),
-
-          headerStyle: {
-            backgroundColor: "#fff",
-          },
-          headerSearchBarOptions: {
-            placeholder: "Search",
-          },
+          headerShown: false,
+          // title: "Chats",
+          // headerLargeTitle: true,
+          // headerTransparent: true,
+          // headerBlurEffect: "regular",
+          // headerLeft: () => (
+          //   <TouchableOpacity>
+          //     <Ionicons name="ellipsis-horizontal-circle-outline" size={30} />
+          //   </TouchableOpacity>
+          // ),
+          // headerStyle: {
+          //   backgroundColor: "#fff",
+          // },
+          // headerSearchBarOptions: {
+          //   placeholder: "Search",
+          // },
         }}
       />
 

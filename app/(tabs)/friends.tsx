@@ -7,6 +7,7 @@ import {
   listenToFriends,
 } from "@services/friendService";
 import SearchFriends from "@components/searchFriends";
+import { Friend, FriendRequest } from "../../types";
 
 const FriendsTabScreen = () => {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);

@@ -3,13 +3,15 @@ import { Tabs } from "expo-router";
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
+import Header from "@components/header";
 const TabsNavigator = () => {
   return (
     <Tabs>
       <Tabs.Screen
         name="chats"
         options={{
-          title: "Chats",
+          // title: "Chats",
+          headerShown: false,
           tabBarIcon: ({ size, color }) => (
             <FontAwesome5 name="home" size={size} color={color} />
           ),

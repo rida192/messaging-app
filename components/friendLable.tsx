@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { auth } from "@services/firebaseConfig";
 import { useRouter } from "expo-router";
 import { Friend } from "../types";
@@ -8,7 +8,8 @@ const FriendLable = ({ item }: { item: Friend }) => {
   const router = useRouter();
   return (
     <TouchableOpacity
-      style={styles.friendItem}
+      // style={styles.friendItem}
+      className="bg-white"
       onPress={() => {
         const chatId =
           user.uid < item.id
@@ -20,11 +21,38 @@ const FriendLable = ({ item }: { item: Friend }) => {
         });
       }}
     >
-      <View style={styles.friendDetails}>
-        <Text style={styles.friendName}>{item.displayName}</Text>
-        {item.lastMessage ? (
+      <View
+        // style={styles.friendDetails}
+        className="flex-row gap-x-3"
+      >
+        <Image
+          source={{ uri: item.photoURL }}
+          className="w-12 h-12 rounded-full"
+        />
+
+        <View className="flex-1 gap-y-2">
+          <Text
+            // style={styles.friendName}
+            className="text-xl font-bold text-[#000E08] tracking-[1px]"
+          >
+            {item.displayName}
+          </Text>
+
+          {item.lastMessage ? (
+            <View>
+              <Text
+                // style={styles.lastMessage}
+                className="text-[#797C7B] text-xs opacity-50 text-left"
+              >
+                {item.lastMessage.text}
+              </Text>
+            </View>
+          ) : (
+            <Text style={styles.noMessages}>No messages yet</Text>
+          )}
+        </View>
+        {item.lastMessage && (
           <View>
-            <Text style={styles.lastMessage}>{item.lastMessage.text}</Text>
             <Text style={styles.timestamp}>
               {(() => {
                 const messageDate = item.lastMessage.timestamp.toDate();
@@ -51,8 +79,6 @@ const FriendLable = ({ item }: { item: Friend }) => {
               })()}
             </Text>
           </View>
-        ) : (
-          <Text style={styles.noMessages}>No messages yet</Text>
         )}
       </View>
     </TouchableOpacity>

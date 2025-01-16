@@ -5,6 +5,8 @@ import { collection, getDoc, onSnapshot, doc } from "firebase/firestore";
 import { auth, db } from "@services/firebaseConfig";
 import { Friend } from "../../../types";
 import FriendLable from "@components/friendLable";
+import Header from "@components/header";
+import { User } from "firebase/auth";
 
 const MainTabScreen: React.FC = () => {
   const user = auth.currentUser;
@@ -87,20 +89,16 @@ const MainTabScreen: React.FC = () => {
     <FriendLable item={item} />
   );
 
-  // console.log("Friends:", friends);
+  console.log("user:", user);
 
   return (
     <View className="flex-1">
-      <Text className="mt-72">MainTabScreen</Text>
-      <Button
-        title="logout"
-        onPress={async () => {
-          await logout();
-        }}
-      />
+      <Header user={user as User} title="Home" />
 
-      <View style={styles.container}>
-        <Text style={styles.header}>Friends</Text>
+      <View
+        className="flex-1 bg-white rounded-t-[60px] mt-[-60px] px-6 py-10"
+        // style={styles.container}
+      >
         <FlatList
           data={friends}
           keyExtractor={(item) => item.id}
