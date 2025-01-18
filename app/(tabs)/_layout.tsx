@@ -1,10 +1,11 @@
-import { Tabs } from "expo-router";
+import { Tabs, useSegments } from "expo-router";
 
 import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
 import Ionicons from "@expo/vector-icons/Ionicons";
 import Header from "@components/header";
 const TabsNavigator = () => {
+  const segments = useSegments();
   return (
     <Tabs>
       <Tabs.Screen
@@ -15,6 +16,9 @@ const TabsNavigator = () => {
           tabBarIcon: ({ size, color }) => (
             <FontAwesome5 name="home" size={size} color={color} />
           ),
+          tabBarStyle: {
+            display: segments[2] === "[chatId]" ? "none" : "flex",
+          },
         }}
       />
       <Tabs.Screen
