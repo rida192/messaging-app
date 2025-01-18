@@ -38,7 +38,7 @@ const FriendLable = ({ item }: { item: Friend }) => {
         <View className="flex-1 gap-y-2">
           <Text
             // style={styles.friendName}
-            className="text-xl font-bold text-[#000E08] tracking-[1px]"
+            className="text-lg font-medium text-[#000E08] "
           >
             {item.displayName}
           </Text>
