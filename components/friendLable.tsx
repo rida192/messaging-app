@@ -6,6 +6,7 @@ import { Friend } from "../types";
 const FriendLable = ({ item }: { item: Friend }) => {
   const user = auth.currentUser;
   const router = useRouter();
+
   return (
     <TouchableOpacity
       // style={styles.friendItem}
@@ -17,7 +18,11 @@ const FriendLable = ({ item }: { item: Friend }) => {
             : `${item.id}_${user.uid}`;
         router.push({
           pathname: "/chats/[chatId]",
-          params: { chatId }, // Pass friend's ID to chat screen
+          params: {
+            chatId,
+            displayName: item.displayName,
+            photoURL: item.photoURL,
+          }, // Pass friend's ID to chat screen
         });
       }}
     >

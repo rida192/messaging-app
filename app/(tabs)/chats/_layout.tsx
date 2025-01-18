@@ -1,8 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Link, Stack } from "expo-router";
+import { Stack, useGlobalSearchParams } from "expo-router";
+
 import { TouchableOpacity, View, Text, Image } from "react-native";
 
 const Layout = () => {
+  const { displayName, photoURL } = useGlobalSearchParams(); // Extract parameters
+
+  function encodeProfilePicturesPath(url) {
+    return url.replace("/profilePictures/", "/profilePictures%2F");
+  }
+
   return (
     <Stack>
       <Stack.Screen
@@ -44,12 +51,14 @@ const Layout = () => {
             >
               <Image
                 source={{
-                  uri: "https://pbs.twimg.com/profile_images/1564203599747600385/f6Lvcpcu_400x400.jpg",
+                  uri:
+                    encodeProfilePicturesPath(photoURL) ||
+                    "https://via.placeholder.com/150",
                 }}
                 style={{ width: 40, height: 40, borderRadius: 50 }}
               />
               <Text style={{ fontSize: 16, fontWeight: "500" }}>
-                Simon Grimm
+                {displayName || "Unkonwn User"}
               </Text>
             </View>
           ),

@@ -89,7 +89,7 @@ const MainTabScreen: React.FC = () => {
     <FriendLable item={item} />
   );
 
-  console.log("user:", user);
+  // console.log("user:", user);
 
   return (
     <View className="flex-1">
