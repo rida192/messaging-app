@@ -2,9 +2,11 @@ import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import { auth } from "@services/firebaseConfig";
 import { useRouter } from "expo-router";
 import { Friend } from "../types";
+import { useChat } from "../hooks/useChat";
 
 const FriendLable = ({ item }: { item: Friend }) => {
   const user = auth.currentUser;
+  const { data: lastMessage } = useChat(user.uid, item.id);
   const router = useRouter();
 
   return (
@@ -43,24 +45,24 @@ const FriendLable = ({ item }: { item: Friend }) => {
             {item.displayName}
           </Text>
 
-          {item.lastMessage ? (
+          {lastMessage ? (
             <View>
               <Text
                 // style={styles.lastMessage}
                 className="text-[#797C7B] text-xs opacity-50 text-left"
               >
-                {item.lastMessage.text}
+                {lastMessage.text}
               </Text>
             </View>
           ) : (
             <Text style={styles.noMessages}>No messages yet</Text>
           )}
         </View>
-        {item.lastMessage && (
+        {lastMessage && (
           <View>
             <Text style={styles.timestamp}>
               {(() => {
-                const messageDate = item.lastMessage.timestamp.toDate();
+                const messageDate = lastMessage.timestamp.toDate();
                 const now = new Date();
                 const yesterday = new Date(now);
                 yesterday.setDate(yesterday.getDate() - 1);

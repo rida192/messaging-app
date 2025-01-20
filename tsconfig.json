@@ -8,7 +8,9 @@
     "@components/*": ["./components/*"],
     "@services/*": ["./services/*"],
     "@utils/*": ["./utils/*"],
-    "@assets/*": ["./assets/*"]
+    "@assets/*": ["./assets/*"],
+    "@hooks/*": ["./hooks/*"],
+    "@types/*": ["./types/*"],
     }
   },
   "extends": "expo/tsconfig.base",

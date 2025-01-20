@@ -57,6 +57,8 @@ const ChatScreen = () => {
       displayName: user.displayName || "Anonymous", // Use a default name if not available
     };
 
+    setNewMessage(""); // Clear the input field
+
     // Ensure chatId is a string before using split
     if (typeof chatId === "string") {
       const otherUserId = chatId.split("_").find((id) => id !== user.uid); // Get the other user's ID
@@ -88,7 +90,9 @@ const ChatScreen = () => {
           },
         });
 
-        setNewMessage(""); // Clear the input field
+        // queryClient.invalidateQueries({
+        //   queryKey: ["chat", user.uid],
+        // });
       } catch (error) {
         console.error("Error sending message: ", error);
       }
