@@ -22,6 +22,7 @@ const MainTabScreen: React.FC = () => {
             data={Array(8).fill({})} // Render 8 skeleton items
             keyExtractor={(_, index) => index.toString()}
             renderItem={() => <SkeletonFriendLabel />}
+            showsVerticalScrollIndicator={false}
           />
         </View>
       </View>
