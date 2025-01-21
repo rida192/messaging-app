@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -23,6 +23,14 @@ import {
 import { useLocalSearchParams } from "expo-router";
 import { Message } from "../../../types";
 
+import Animated, {
+  useAnimatedRef,
+  useSharedValue,
+  useAnimatedScrollHandler,
+  scrollTo,
+  useDerivedValue,
+} from "react-native-reanimated";
+
 const ChatScreen = () => {
   const { chatId } = useLocalSearchParams();
   // console.log(chatId);
@@ -30,6 +38,10 @@ const ChatScreen = () => {
   const user = auth.currentUser; // Get the current user
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+
+  const animatedRef = useAnimatedRef();
+  const scrollY = useSharedValue(0);
+  const contentHeight = useSharedValue(0);
 
   useEffect(() => {
     // Set up real-time listener for messages in the chat
@@ -101,9 +113,36 @@ const ChatScreen = () => {
     }
   };
 
+  // Smooth scrolling to the bottom
+  // Smooth scrolling to the bottom
+  const scrollToBottom = () => {
+    console.log("Scrolling to bottom...");
+    if (contentHeight.value > 0) {
+      scrollTo(animatedRef, 0, contentHeight.value, true); // Scroll to the bottom
+      // contentHeight.value += 900;
+    }
+  };
+
+  // Track content height changes
+  const scrollHandler = useAnimatedScrollHandler({
+    onScroll: (event) => {
+      contentHeight.value = event.contentSize.height;
+    },
+  });
+
+  // Automatically scroll to bottom when new messages are added
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+  useDerivedValue(() => {
+    scrollTo(animatedRef, 100, contentHeight.value, true);
+  });
+
   return (
     <View style={styles.container}>
-      <FlatList
+      <Animated.FlatList
+        ref={animatedRef}
         data={messages}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
@@ -118,6 +157,15 @@ const ChatScreen = () => {
             </Text>
           </View>
         )}
+        onScroll={scrollHandler} // Track scroll events
+        scrollEventThrottle={16} // Ensure smooth scrolling
+        onContentSizeChange={(width, height) => {
+          console.log("Content height:", height);
+
+          contentHeight.value = height; // Update content height
+          scrollToBottom(); // Scroll to the bottom when content size changes
+        }}
+        contentContainerStyle={{ paddingBottom: 80 }} // Add padding for the input container
       />
 
       <View style={styles.inputContainer}>
