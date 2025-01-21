@@ -37,7 +37,7 @@ declare interface Friend {
 }
 
 declare interface Message {
-  id: string;
+  _id: string;
   text: string;
   timestamp: Timestamp | Date;
   senderId: string;
