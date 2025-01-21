@@ -6,6 +6,7 @@ import { auth } from "@services/firebaseConfig";
 import FriendLabel from "@components/friendLable";
 import Header from "@components/header";
 import { Friend } from "../../../types";
+import SkeletonFriendLabel from "@components/skeletokFriendLable";
 
 const MainTabScreen: React.FC = () => {
   const user = auth.currentUser;
@@ -14,8 +15,15 @@ const MainTabScreen: React.FC = () => {
 
   if (isLoading)
     return (
-      <View>
-        <Text>Loading...</Text>
+      <View className="flex-1">
+        <Header user={user} title="Home" />
+        <View className="flex-1 bg-white rounded-t-[60px] mt-[-60px] px-6 pt-10">
+          <FlatList
+            data={Array(8).fill({})} // Render 8 skeleton items
+            keyExtractor={(_, index) => index.toString()}
+            renderItem={() => <SkeletonFriendLabel />}
+          />
+        </View>
       </View>
     );
   if (error)
