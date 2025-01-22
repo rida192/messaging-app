@@ -1,5 +1,5 @@
 // components/CustomTabBar.js
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   TouchableOpacity,
@@ -15,6 +15,7 @@ import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSpring,
+  withTiming,
 } from "react-native-reanimated";
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
@@ -49,8 +50,22 @@ const CustomTabBar = (props: BottomTabBarProps) => {
     (width / tabs.length) * activeIndex + (width / tabs.length - 60) / 2
   );
 
+  // Opacity animation for the tab bar
+  const tabBarOpacity = useSharedValue(isTabBarVisible ? 1 : 0);
+
+  useEffect(() => {
+    // Animate opacity when visibility changes
+    tabBarOpacity.value = withTiming(isTabBarVisible ? 1 : 0, {
+      duration: 300,
+    });
+  }, [isTabBarVisible]);
+
   const animatedCircleStyle = useAnimatedStyle(() => ({
     transform: [{ translateX: circlePosition.value }],
+  }));
+
+  const animatedTabBarStyle = useAnimatedStyle(() => ({
+    opacity: tabBarOpacity.value,
   }));
 
   const handleTabPress = (index) => {
@@ -64,9 +79,7 @@ const CustomTabBar = (props: BottomTabBarProps) => {
   };
 
   return (
-    <View
-      style={[styles.tabBar, { display: isTabBarVisible ? "flex" : "none" }]}
-    >
+    <Animated.View style={[styles.tabBar, animatedTabBarStyle]}>
       {/* Purple Circle */}
       <Animated.View style={[styles.circle, animatedCircleStyle]} />
 
@@ -97,7 +110,7 @@ const CustomTabBar = (props: BottomTabBarProps) => {
           );
         })}
       </View>
-    </View>
+    </Animated.View>
   );
 };
 

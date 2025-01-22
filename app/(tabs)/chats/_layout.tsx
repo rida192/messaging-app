@@ -11,7 +11,9 @@ const Layout = () => {
   }
 
   return (
-    <Stack>
+    <Stack
+      screenOptions={{ animation: "slide_from_right", animationDuration: 100 }}
+    >
       <Stack.Screen
         name="index"
         options={{
