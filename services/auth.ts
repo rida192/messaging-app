@@ -129,7 +129,7 @@ export const useAuthState = () => {
         // If a user is logged in, navigate to the Home screen
 
         console.log("User is authenticated. Navigating to home...");
-        router.push("/(tabs)/chats");
+        router.replace("/(tabs)/chats");
       } else {
         // If no user is logged in, stay on the Login screen
 
