@@ -1,43 +1,28 @@
-import { Tabs, useSegments } from "expo-router";
+import { Tabs } from "expo-router";
+import CustomTabBar from "@components/customTabBar";
 
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-
-import Ionicons from "@expo/vector-icons/Ionicons";
-import Header from "@components/header";
 const TabsNavigator = () => {
-  const segments = useSegments();
   return (
-    <Tabs>
+    <Tabs
+      tabBar={(props) => <CustomTabBar {...props} />}
+      // screenOptions={{ headerShown: false }} // Hide header for all screens
+    >
       <Tabs.Screen
         name="chats"
         options={{
-          // title: "Chats",
           headerShown: false,
-          tabBarIcon: ({ size, color }) => (
-            <FontAwesome5 name="home" size={size} color={color} />
-          ),
-          tabBarStyle: {
-            display: segments[2] === "[chatId]" ? "none" : "flex",
-          },
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
           title: "Profile",
-          tabBarIcon: ({ size, color }) => (
-            <FontAwesome5 name="user-alt" size={size} color={color} />
-          ),
         }}
       />
-
       <Tabs.Screen
         name="friends"
         options={{
           title: "Friends",
-          tabBarIcon: ({ size, color }) => (
-            <Ionicons name="people" size={30} color={color} />
-          ),
         }}
       />
     </Tabs>
