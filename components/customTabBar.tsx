@@ -1,5 +1,6 @@
 // components/CustomTabBar.js
 import React, { useEffect } from "react";
+
 import {
   View,
   TouchableOpacity,
@@ -17,11 +18,10 @@ import Animated, {
   withSpring,
   withTiming,
 } from "react-native-reanimated";
-import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
 
 const { width } = Dimensions.get("window");
 
-const CustomTabBar = (props: BottomTabBarProps) => {
+const CustomTabBar = (props) => {
   const router = useRouter();
   const segments = useSegments();
 
