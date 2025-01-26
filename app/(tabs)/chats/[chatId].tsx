@@ -1,10 +1,17 @@
 import React from "react";
-import { View, StyleSheet, ActivityIndicator, Text } from "react-native";
+import {
+  View,
+  StyleSheet,
+  ActivityIndicator,
+  Text,
+  TouchableOpacity,
+} from "react-native";
 import { Bubble, GiftedChat, IMessage } from "react-native-gifted-chat";
 import { useLocalSearchParams } from "expo-router";
 import useChatMessages from "@hooks/useChatMesseges";
 import useSendMessage from "@hooks/useSendMessege";
 import { auth } from "@services/firebaseConfig";
+import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 
 const ChatScreen = () => {
   const { chatId } = useLocalSearchParams();
@@ -43,7 +50,7 @@ const ChatScreen = () => {
         showUserAvatar
         alwaysShowSend
         renderAvatarOnTop
-        maxComposerHeight={20}
+        scrollToBottom={true}
         renderBubble={(props) => {
           return (
             <Bubble
@@ -56,6 +63,9 @@ const ChatScreen = () => {
             />
           );
         }}
+        scrollToBottomComponent={() => (
+          <FontAwesome5 name="angle-double-down" size={22} color="#3d4a7a" />
+        )}
       />
     </View>
   );
@@ -71,6 +81,17 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#ffffff",
+  },
+  scrollToBottomButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#3d4a7a",
+    justifyContent: "center",
+    alignItems: "center",
+    position: "absolute",
+    bottom: 80, // Adjust this value based on your layout
+    right: 20,
   },
 });
 
