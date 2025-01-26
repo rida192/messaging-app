@@ -1,47 +1,45 @@
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useState } from "react";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { db } from "@services/firebaseConfig";
 import { IMessage } from "react-native-gifted-chat";
 
 const useChatMessages = (chatId: string) => {
-  const fetchMessages = () =>
-    new Promise<IMessage[]>((resolve, reject) => {
-      const chatRef = collection(db, `chats/${chatId}/messages`);
-      const messagesQuery = query(chatRef, orderBy("timestamp", "desc"));
+  const [messages, setMessages] = useState<IMessage[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
 
-      const unsubscribe = onSnapshot(
-        messagesQuery,
-        (snapshot) => {
-          const messages = snapshot.docs.map((doc) => {
-            const data = doc.data();
-            return {
-              _id: doc.id,
-              text: data.text,
-              createdAt: data.timestamp?.toDate() || new Date(),
-              user: {
-                _id: data.senderId,
-                name: data.displayName || "Anonymous",
-              },
-            };
-          });
-          resolve(messages);
-        },
-        reject
-      );
+  useEffect(() => {
+    const chatRef = collection(db, `chats/${chatId}/messages`);
+    const messagesQuery = query(chatRef, orderBy("timestamp", "desc"));
 
-      return unsubscribe;
-    });
+    const unsubscribe = onSnapshot(
+      messagesQuery,
+      (snapshot) => {
+        const messagesList = snapshot.docs.map((doc) => {
+          const data = doc.data();
+          return {
+            _id: doc.id,
+            text: data.text,
+            createdAt: data.timestamp?.toDate() || new Date(),
+            user: {
+              _id: data.senderId,
+              name: data.displayName || "Anonymous",
+            },
+          };
+        });
+        setMessages(messagesList); // Update local state
+        setIsLoading(false); // Set loading to false
+      },
+      (error) => {
+        setError(error); // Set error state
+        setIsLoading(false); // Set loading to false
+      }
+    );
 
-  const {
-    data: messages,
-    isLoading,
-    error,
-  } = useQuery<IMessage[], Error>({
-    queryKey: ["messages", chatId],
-    queryFn: fetchMessages,
-  });
+    return () => unsubscribe(); // Cleanup on unmount
+  }, [chatId]);
 
-  return { messages: messages || [], isLoading, error };
+  return { messages, isLoading, error };
 };
 
 export default useChatMessages;

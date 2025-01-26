@@ -43,6 +43,7 @@ const ChatScreen = () => {
         showUserAvatar
         alwaysShowSend
         renderAvatarOnTop
+        maxComposerHeight={20}
         renderBubble={(props) => {
           return (
             <Bubble

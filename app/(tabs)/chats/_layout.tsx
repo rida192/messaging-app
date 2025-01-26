@@ -6,9 +6,9 @@ import { TouchableOpacity, View, Text, Image } from "react-native";
 const Layout = () => {
   const { displayName, photoURL } = useGlobalSearchParams(); // Extract parameters
 
-  // function encodeProfilePicturesPath(url) {
-  //   return url.replace("/profilePictures/", "/profilePictures%2F");
-  // }
+  function encodeProfilePicturesPath(url) {
+    return url?.replace("/profilePictures/", "/profilePictures%2F");
+  }
 
   return (
     <Stack
@@ -54,7 +54,7 @@ const Layout = () => {
               <Image
                 source={{
                   uri:
-                    // encodeProfilePicturesPath(photoURL) ||
+                    encodeProfilePicturesPath(photoURL) ||
                     "https://via.placeholder.com/150",
                 }}
                 style={{ width: 40, height: 40, borderRadius: 50 }}

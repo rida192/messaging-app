@@ -1,5 +1,5 @@
 // components/CustomTabBar.js
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
 import {
   View,
@@ -22,10 +22,17 @@ import Animated, {
 const { width } = Dimensions.get("window");
 
 const CustomTabBar = (props) => {
+  const [isTabBarVisible, setIsTabBarVisible] = useState(true);
   const router = useRouter();
   const segments = useSegments();
 
-  const isTabBarVisible = segments[2] !== "[chatId]";
+  // const isTabBarVisible = segments[2] !== "[chatId]";
+
+  useEffect(() => {
+    setIsTabBarVisible(segments[2] !== "[chatId]");
+  }, [segments]);
+
+  // if (!isTabBarVisible) return null;
 
   const tabs = [
     {
@@ -79,7 +86,13 @@ const CustomTabBar = (props) => {
   };
 
   return (
-    <Animated.View style={[styles.tabBar, animatedTabBarStyle]}>
+    <Animated.View
+      style={[
+        styles.tabBar,
+        { display: isTabBarVisible ? "flex" : "none" },
+        animatedTabBarStyle,
+      ]}
+    >
       {/* Purple Circle */}
       <Animated.View style={[styles.circle, animatedCircleStyle]} />
 

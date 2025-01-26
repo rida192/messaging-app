@@ -2,6 +2,7 @@ import { Text, TouchableOpacity, Image, View } from "react-native";
 import { useFonts } from "expo-font";
 
 import { Link } from "expo-router";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 const index = () => {
   const [fontsLoaded] = useFonts({
@@ -10,7 +11,7 @@ const index = () => {
 
   if (!fontsLoaded) return null;
   return (
-    <View className="flex-1">
+    <View className="flex-1 justify-center items-center">
       <Image
         source={require("../assets/images/splash.png")}
         resizeMode="cover"
@@ -25,7 +26,7 @@ const index = () => {
         family.
       </Text>
 
-      <TouchableOpacity className="mt-[128px] self-center bg-white/30 py-4 px-20 rounded-2xl  ">
+      <TouchableOpacity className="mt-[95px] self-center bg-white/30 py-4 px-20 rounded-2xl  ">
         <Link href={"/(auth)/signUp"}>
           <Text className="text-white text-base">Sign up with e-mail</Text>
         </Link>
