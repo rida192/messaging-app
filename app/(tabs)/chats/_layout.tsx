@@ -1,14 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
+import { encodeProfilePicturesPath } from "@utils/index";
 import { Stack, useGlobalSearchParams } from "expo-router";
 
 import { TouchableOpacity, View, Text, Image } from "react-native";
 
 const Layout = () => {
   const { displayName, photoURL } = useGlobalSearchParams(); // Extract parameters
-
-  function encodeProfilePicturesPath(url) {
-    return url?.replace("/profilePictures/", "/profilePictures%2F");
-  }
 
   return (
     <Stack

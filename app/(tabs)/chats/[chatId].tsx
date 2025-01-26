@@ -5,6 +5,7 @@ import {
   ActivityIndicator,
   Text,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { Bubble, GiftedChat, IMessage } from "react-native-gifted-chat";
 import { useLocalSearchParams } from "expo-router";
@@ -14,8 +15,19 @@ import { auth } from "@services/firebaseConfig";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 
 const ChatScreen = () => {
-  const { chatId } = useLocalSearchParams();
+  const { chatId, photoURL } = useLocalSearchParams();
   const user = auth.currentUser;
+
+  // Encode the photoURL if necessary
+  function encodeProfilePicturesPath(url) {
+    return url?.replace("/profilePictures/", "/profilePictures%2F");
+  }
+
+  // Current user's avatar
+  const currentUserAvatar = user?.photoURL;
+
+  // Other user's avatar
+  const otherUserAvatar = encodeProfilePicturesPath(photoURL as string);
 
   // Use custom hooks
   const { messages, isLoading, error } = useChatMessages(chatId as string);
@@ -37,15 +49,36 @@ const ChatScreen = () => {
     );
   }
 
+  // Custom avatar rendering
+  const renderAvatar = (props) => {
+    const { currentMessage } = props;
+    return (
+      <Image
+        source={{ uri: currentMessage.user.avatar }} // Use the avatar URL
+        style={styles.avatar}
+      />
+    );
+  };
+
   return (
     <View style={styles.container}>
       <GiftedChat
         isStatusBarTranslucentAndroid
-        messages={messages}
+        messages={messages.map((message) => ({
+          ...message,
+          user: {
+            ...message.user,
+            avatar:
+              message.user._id === user?.uid
+                ? currentUserAvatar
+                : otherUserAvatar, // Set avatar based on user ID
+          },
+        }))}
         onSend={(newMessages) => sendMessage(newMessages[0])}
         user={{
           _id: user?.uid || "",
           name: user?.displayName || "You",
+          avatar: currentUserAvatar, // Current user's avatar
         }}
         showUserAvatar
         alwaysShowSend
@@ -66,6 +99,7 @@ const ChatScreen = () => {
         scrollToBottomComponent={() => (
           <FontAwesome5 name="angle-double-down" size={22} color="#3d4a7a" />
         )}
+        renderAvatar={renderAvatar} // Add custom avatar rendering
       />
     </View>
   );
@@ -82,16 +116,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#ffffff",
   },
-  scrollToBottomButton: {
+  avatar: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: "#3d4a7a",
-    justifyContent: "center",
-    alignItems: "center",
-    position: "absolute",
-    bottom: 80, // Adjust this value based on your layout
-    right: 20,
+    borderRadius: 20, // Make the avatar circular
   },
 });
 
