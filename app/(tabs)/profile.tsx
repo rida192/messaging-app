@@ -7,6 +7,10 @@ import { storage } from "@services/firebaseConfig";
 import * as ImagePicker from "expo-image-picker";
 import { doc, updateDoc } from "firebase/firestore";
 import { logout } from "@services/auth";
+import { styled } from "nativewind";
+import { LinearGradient } from "expo-linear-gradient";
+
+const GradientBackground = styled(LinearGradient);
 
 const ProfileTabScreen = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -91,32 +95,49 @@ const ProfileTabScreen = () => {
 
   // console.log(user);
   return (
-    <View>
-      <Text>Email: {user.email}</Text>
-      <Text>Display Name: {displayName || "No display name set"}</Text>
-      <Image
-        source={{ uri: photoURL || undefined }}
-        style={{ width: 100, height: 100 }}
-      />
-      <Button
-        title="Change Profile Picture"
-        onPress={handleChangeProfilePicture}
-      />
+    <View className="flex-1">
+      <GradientBackground
+        colors={["#0a0922", "#3c4a7a"]}
+        start={{ x: 0.5, y: 0.25 }}
+        end={{ x: 0.5, y: 1.0 }}
+        locations={[0, 1]}
+        className="pt-24 h-[350px] items-center "
+      >
+        <Image
+          source={{ uri: photoURL || undefined }}
+          style={{ width: 100, height: 100 }}
+          className="mt-[-20px] rounded-full"
+        />
+        <Text className="text-white font-bold text-xl mt-2 ">
+          {displayName || "No display name set"}
+        </Text>
+        <Text className="text-white font-bold text-xl mt-2 "></Text>
+      </GradientBackground>
 
-      <TextInput
-        placeholder="Display Name"
-        ref={inputRef}
-        value={displayName}
-        onChangeText={(text) => setDisplayName(text)}
-      />
-      <Button title="Change Display Name" onPress={handleChangeDisplayName} />
+      <View className="flex-1 bg-white rounded-t-[60px] mt-[-60px] px-6 py-10">
+        <Text>Email: {user.email}</Text>
+        {/* <Text>Display Name: {displayName || "No display name set"}</Text> */}
 
-      <Button
-        title="logout"
-        onPress={async () => {
-          await logout();
-        }}
-      />
+        <Button
+          title="Change Profile Picture"
+          onPress={handleChangeProfilePicture}
+        />
+
+        <TextInput
+          placeholder="Display Name"
+          ref={inputRef}
+          value={displayName}
+          onChangeText={(text) => setDisplayName(text)}
+        />
+        <Button title="Change Display Name" onPress={handleChangeDisplayName} />
+
+        <Button
+          title="logout"
+          onPress={async () => {
+            await logout();
+          }}
+        />
+      </View>
     </View>
   );
 };

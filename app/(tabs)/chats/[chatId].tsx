@@ -13,15 +13,11 @@ import useChatMessages from "@hooks/useChatMesseges";
 import useSendMessage from "@hooks/useSendMessege";
 import { auth } from "@services/firebaseConfig";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
+import { encodeProfilePicturesPath } from "@utils/index";
 
 const ChatScreen = () => {
   const { chatId, photoURL } = useLocalSearchParams();
   const user = auth.currentUser;
-
-  // Encode the photoURL if necessary
-  function encodeProfilePicturesPath(url) {
-    return url?.replace("/profilePictures/", "/profilePictures%2F");
-  }
 
   // Current user's avatar
   const currentUserAvatar = user?.photoURL;
