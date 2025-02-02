@@ -1,5 +1,5 @@
 // components/MainTabScreen.tsx
-import { View, FlatList, Text } from "react-native";
+import { View, FlatList, Text, StyleSheet } from "react-native";
 import React from "react";
 import { useFriends } from "@hooks/useFriends";
 import { auth } from "@services/firebaseConfig";
@@ -44,6 +44,16 @@ const MainTabScreen: React.FC = () => {
           renderItem={({ item }: { item: Friend }) => {
             return <FriendLabel item={item} />;
           }}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{
+                height: StyleSheet.hairlineWidth,
+                backgroundColor: "#ccc",
+                marginLeft: 50,
+                marginVertical: 10,
+              }}
+            />
+          )}
         />
       </View>
     </View>

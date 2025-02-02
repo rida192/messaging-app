@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   View,
   StyleSheet,
@@ -14,6 +14,7 @@ import useSendMessage from "@hooks/useSendMessege";
 import { auth } from "@services/firebaseConfig";
 import { FontAwesome5, Ionicons } from "@expo/vector-icons";
 import { encodeProfilePicturesPath } from "@utils/index";
+import { updateActiveChatId } from "@services/friendService";
 
 const ChatScreen = () => {
   const { chatId, photoURL } = useLocalSearchParams();
@@ -24,6 +25,19 @@ const ChatScreen = () => {
 
   // Other user's avatar
   const otherUserAvatar = encodeProfilePicturesPath(photoURL as string);
+
+  useEffect(() => {
+    if (user && chatId) {
+      updateActiveChatId(user.uid, chatId as string);
+    }
+
+    // Reset active chat ID when the chat screen is closed
+    return () => {
+      if (user) {
+        updateActiveChatId(user.uid, null);
+      }
+    };
+  }, [user, chatId]);
 
   // Use custom hooks
   const { messages, isLoading, error } = useChatMessages(chatId as string);

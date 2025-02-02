@@ -55,6 +55,11 @@ const acceptFriendRequest = async (
     await setDoc(fromUserFriendsRef, { friendId: toUserId });
     await setDoc(toUserFriendsRef, { friendId: fromUserId });
 
+    // Create a new chat document for the two users
+    console.log("Creating new chat...");
+    await createNewChat(fromUserId, toUserId);
+    console.log("Friend request accepted and chat created.");
+
     console.log("Friend request accepted");
   } catch (error) {
     console.error("Error accepting friend request:", error);
@@ -210,6 +215,54 @@ const fetchFriendsWithLastMessages = async (userId: string) => {
   }
 };
 
+const createNewChat = async (user1Id: string, user2Id: string) => {
+  const chatId =
+    user1Id < user2Id ? `${user1Id}_${user2Id}` : `${user2Id}_${user1Id}`;
+  const chatRef = doc(db, "chats", chatId);
+
+  try {
+    // Check if the chat already exists
+    const chatDoc = await getDoc(chatRef);
+    if (!chatDoc.exists()) {
+      // Create a new chat document with the required fields
+      await setDoc(chatRef, {
+        participants: [user1Id, user2Id],
+        lastMessage: null,
+        unreadCount: {
+          [user1Id]: 0, // Initialize unread count for user1
+          [user2Id]: 0, // Initialize unread count for user2
+        },
+      });
+      console.log("New chat created successfully!");
+    } else {
+      console.log("Chat already exists.");
+    }
+  } catch (error) {
+    console.error("Error creating new chat: ", error);
+  }
+};
+
+const updateActiveChatId = async (userId: string, chatId: string | null) => {
+  const userRef = doc(db, "users", userId);
+  await updateDoc(userRef, { activeChatId: chatId });
+};
+
+/**
+ * Fetches the active chat ID for a user.
+ * @param userId - The ID of the user.
+ * @returns The active chat ID or null if no chat is active.
+ */
+const getActiveChatId = async (userId: string) => {
+  const userRef = doc(db, "users", userId);
+  const userDoc = await getDoc(userRef);
+
+  if (userDoc.exists()) {
+    return userDoc.data().activeChatId || null;
+  }
+
+  return null;
+};
+
 export {
   sendFriendRequest,
   acceptFriendRequest,
@@ -220,4 +273,6 @@ export {
   listenToFriendRequests, // Export real-time functions
   listenToFriends, // Export real-time functions
   fetchFriendsWithLastMessages,
+  updateActiveChatId,
+  getActiveChatId,
 };

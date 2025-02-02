@@ -10,6 +10,7 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import { IMessage } from "react-native-gifted-chat";
+import { getActiveChatId } from "@services/friendService"; // Import the function
 
 const useSendMessage = (chatId: string) => {
   const user = auth.currentUser;
@@ -35,6 +36,10 @@ const useSendMessage = (chatId: string) => {
               {
                 participants: [user?.uid, otherUserId],
                 lastMessage: null,
+                unreadCount: {
+                  [user?.uid]: 0,
+                  [otherUserId]: 0,
+                },
               },
               { merge: true }
             );
@@ -49,6 +54,22 @@ const useSendMessage = (chatId: string) => {
               senderId: user?.uid,
             },
           });
+
+          // Check if the recipient is currently viewing the chat
+          if (otherUserId) {
+            const isRecipientViewingChat =
+              (await getActiveChatId(otherUserId)) === chatId;
+
+            if (!isRecipientViewingChat) {
+              const chatData = chatDoc.data();
+              const currentUnreadCount =
+                chatData?.unreadCount?.[otherUserId] || 0;
+
+              await updateDoc(chatRef, {
+                [`unreadCount.${otherUserId}`]: currentUnreadCount + 1,
+              });
+            }
+          }
         } catch (error) {
           console.error("Error sending message: ", error);
         }
