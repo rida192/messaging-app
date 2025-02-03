@@ -34,7 +34,10 @@ declare interface Friend {
   lastMessage: LastMessage;
   photoURL: string;
   username: string;
+  lastMessageTimestamp?: Timestamp | Date;
 }
+
+// {"nanoseconds": 871000000, "seconds": 1738574978}
 
 declare interface Message {
   _id: string;

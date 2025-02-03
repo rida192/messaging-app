@@ -1,4 +1,3 @@
-// components/MainTabScreen.tsx
 import { View, FlatList, Text, StyleSheet } from "react-native";
 import React from "react";
 import { useFriends } from "@hooks/useFriends";
@@ -7,6 +6,9 @@ import FriendLabel from "@components/friendLable";
 import Header from "@components/header";
 import { Friend } from "../../../types";
 import SkeletonFriendLabel from "@components/skeletokFriendLable";
+import Animated, { LinearTransition } from "react-native-reanimated";
+
+// Create an animated version of FlatList
 
 const MainTabScreen: React.FC = () => {
   const user = auth.currentUser;
@@ -34,16 +36,32 @@ const MainTabScreen: React.FC = () => {
       </View>
     );
 
+  // Sort friends based on lastMessageTimestamp (most recent first)
+  const sortedFriends = friends
+    ? [...friends].sort((a, b) => {
+        const timestampA =
+          a.lastMessageTimestamp instanceof Date
+            ? a.lastMessageTimestamp
+            : a.lastMessageTimestamp.toDate();
+        const timestampB =
+          b.lastMessageTimestamp instanceof Date
+            ? b.lastMessageTimestamp
+            : b.lastMessageTimestamp.toDate();
+        return timestampB.getTime() - timestampA.getTime(); // Sort in descending order
+      })
+    : [];
+
   return (
     <View className="flex-1">
       <Header user={user} title="Home" />
       <View className="flex-1 bg-white rounded-t-[60px] mt-[-60px] px-6 py-10">
-        <FlatList
-          data={friends}
+        <Animated.FlatList
+          data={sortedFriends} // Use the sorted friends list
           keyExtractor={(item) => item.id}
           renderItem={({ item }: { item: Friend }) => {
             return <FriendLabel item={item} />;
           }}
+          itemLayoutAnimation={LinearTransition}
           ItemSeparatorComponent={() => (
             <View
               style={{
