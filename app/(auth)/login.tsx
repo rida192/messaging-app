@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Alert,
   TouchableOpacity,
+  ActivityIndicator,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { login } from "@services/auth";
@@ -100,15 +101,24 @@ const Login: React.FC = () => {
         start={{ x: 0.0, y: 0.25 }}
         end={{ x: 1, y: 1.0 }}
         locations={[0.4, 1]}
-        className="py-4 rounded-2xl mt-24 "
+        className="py-4 rounded-2xl mt-24"
       >
         <TouchableOpacity
           onPress={handleSubmit(onSubmit)}
           disabled={isSubmitting}
         >
-          <Text className="text-white text-center text-base font-bold font-[Poppins]">
-            {isSubmitting ? "Logging in..." : "Login"}
-          </Text>
+          {isSubmitting ? (
+            <View className="flex-row justify-center items-center gap-x-2">
+              <Text className="text-white text-center text-base font-bold font-[Poppins]">
+                Logging in
+              </Text>
+              <ActivityIndicator size="small" color="white" />
+            </View>
+          ) : (
+            <Text className="text-white text-center text-base font-bold font-[Poppins]">
+              Login
+            </Text>
+          )}
         </TouchableOpacity>
       </GradientBackground>
     </View>
