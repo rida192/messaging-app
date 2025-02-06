@@ -1,9 +1,18 @@
 import { useState, useEffect, useRef } from "react";
-import { Text, View, TextInput, Image, Button } from "react-native";
+import {
+  Text,
+  View,
+  TextInput,
+  Image,
+  Button,
+  Pressable,
+  TouchableOpacity,
+} from "react-native";
 import { auth, db } from "@services/firebaseConfig";
 import { User, updateProfile } from "firebase/auth";
 import { getStorage, getDownloadURL, ref, uploadBytes } from "firebase/storage";
-import { storage } from "@services/firebaseConfig";
+import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import AntDesign from "@expo/vector-icons/AntDesign";
 import * as ImagePicker from "expo-image-picker";
 import { doc, updateDoc } from "firebase/firestore";
 import { logout } from "@services/auth";
@@ -101,13 +110,36 @@ const ProfileTabScreen = () => {
         start={{ x: 0.5, y: 0.25 }}
         end={{ x: 0.5, y: 1.0 }}
         locations={[0, 1]}
-        className="pt-24 h-[350px] items-center "
+        className="pt-24 h-[350px] items-center"
       >
-        <Image
-          source={{ uri: photoURL || undefined }}
-          style={{ width: 100, height: 100 }}
-          className="mt-[-20px] rounded-full"
-        />
+        <TouchableOpacity
+          style={{ position: "absolute", top: 20, right: 20 }}
+          onPress={async () => {
+            await logout();
+          }}
+        >
+          <MaterialCommunityIcons name="exit-to-app" size={24} color="white" />
+        </TouchableOpacity>
+        <TouchableOpacity onPress={handleChangeProfilePicture}>
+          <Image
+            source={{ uri: photoURL || undefined }}
+            style={{ width: 100, height: 100 }}
+            className="mt-[-20px] rounded-full"
+          />
+          <AntDesign
+            name="edit"
+            size={20}
+            color="black"
+            style={{
+              position: "absolute",
+              bottom: 10,
+              right: -5,
+              backgroundColor: "white",
+              borderRadius: 50,
+              padding: 3,
+            }}
+          />
+        </TouchableOpacity>
         <Text className="text-white font-bold text-xl mt-2 ">
           {displayName || "No display name set"}
         </Text>
@@ -118,11 +150,6 @@ const ProfileTabScreen = () => {
         <Text>Email: {user.email}</Text>
         {/* <Text>Display Name: {displayName || "No display name set"}</Text> */}
 
-        <Button
-          title="Change Profile Picture"
-          onPress={handleChangeProfilePicture}
-        />
-
         <TextInput
           placeholder="Display Name"
           ref={inputRef}
@@ -130,13 +157,6 @@ const ProfileTabScreen = () => {
           onChangeText={(text) => setDisplayName(text)}
         />
         <Button title="Change Display Name" onPress={handleChangeDisplayName} />
-
-        <Button
-          title="logout"
-          onPress={async () => {
-            await logout();
-          }}
-        />
       </View>
     </View>
   );
