@@ -102,7 +102,7 @@ const ProfileTabScreen = () => {
     return <Text>Loading user data...</Text>;
   }
 
-  // console.log(user);
+  console.log(user);
   return (
     <View className="flex-1">
       <GradientBackground
@@ -113,7 +113,7 @@ const ProfileTabScreen = () => {
         className="pt-24 h-[350px] items-center"
       >
         <TouchableOpacity
-          style={{ position: "absolute", top: 20, right: 20 }}
+          style={{ position: "absolute", top: 40, right: 20 }}
           onPress={async () => {
             await logout();
           }}
@@ -143,20 +143,33 @@ const ProfileTabScreen = () => {
         <Text className="text-white font-bold text-xl mt-2 ">
           {displayName || "No display name set"}
         </Text>
-        <Text className="text-white font-bold text-xl mt-2 "></Text>
       </GradientBackground>
 
       <View className="flex-1 bg-white rounded-t-[60px] mt-[-60px] px-6 py-10">
-        <Text>Email: {user.email}</Text>
-        {/* <Text>Display Name: {displayName || "No display name set"}</Text> */}
-
-        <TextInput
-          placeholder="Display Name"
-          ref={inputRef}
-          value={displayName}
-          onChangeText={(text) => setDisplayName(text)}
-        />
-        <Button title="Change Display Name" onPress={handleChangeDisplayName} />
+        <Text className="text-[#797C7B] text-sm tracking-[0.5px] mb-[4px]">
+          Display Name
+        </Text>
+        <View className="flex-row items-center">
+          <TextInput
+            placeholder="Display Name"
+            className="text-lg font-[Poppins] flex-1
+            "
+            onBlur={handleChangeDisplayName}
+            ref={inputRef}
+            value={displayName}
+            onChangeText={(text) => setDisplayName(text)}
+          />
+          <AntDesign
+            name="right"
+            size={24}
+            color="black"
+            // style={{ position: "absolute", right: 0 }}
+          />
+        </View>
+        <Text className="text-[#797C7B] text-sm tracking-[0.5px] mt-[30px] mb-[10px]">
+          Email Address
+        </Text>
+        <Text className="text-lg font-[Poppins] ">{user.email}</Text>
       </View>
     </View>
   );
