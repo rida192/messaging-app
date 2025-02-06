@@ -67,17 +67,17 @@ const FriendLable = ({ item }: { item: Friend }) => {
       <View className="flex-row gap-x-3 py-1">
         <Image
           source={{ uri: item.photoURL }}
-          className="w-12 h-12 rounded-full"
+          className="w-[52px] h-[52px] rounded-full"
         />
 
         <View className="flex-1 gap-y-2">
-          <Text className="text-lg font-medium text-[#000E08]">
+          <Text className="text-xl font-[Poppins] font-medium text-[#000E08]">
             {item.displayName}
           </Text>
 
           {lastMessage ? (
             <View>
-              <Text className="text-[#797C7B] text-xs opacity-50 text-left">
+              <Text className="text-[#797C7B] text-xs opacity-60 text-left">
                 {lastMessage.text}
               </Text>
             </View>
