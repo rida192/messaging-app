@@ -5,7 +5,7 @@ import { auth } from "@services/firebaseConfig";
 import FriendLabel from "@components/friendLable";
 import Header from "@components/header";
 import { Friend } from "../../../types";
-import SkeletonFriendLabel from "@components/skeletokFriendLable";
+import SkeletonFriendLabel from "@components/skeletonFriendLable";
 import Animated, { LinearTransition } from "react-native-reanimated";
 
 // Create an animated version of FlatList
