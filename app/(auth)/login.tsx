@@ -9,6 +9,7 @@ import {
   Alert,
   TouchableOpacity,
   ActivityIndicator,
+  Keyboard,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { login } from "@services/auth";
@@ -41,6 +42,7 @@ const Login: React.FC = () => {
   }, []);
 
   const onSubmit = async (data: LoginForm) => {
+    Keyboard.dismiss();
     try {
       await login(data.identifier, data.password);
       router.replace("/(tabs)/chats");
