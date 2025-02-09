@@ -46,9 +46,9 @@ const CustomTabBar = (props) => {
       label: "Profile",
     },
     {
-      name: "friends",
+      name: "connections",
       icon: (color) => <Ionicons name="people" size={30} color={color} />,
-      label: "Friends",
+      label: "Connect",
     },
   ];
 
@@ -114,7 +114,7 @@ const CustomTabBar = (props) => {
               <Text
                 style={{
                   color: isActive ? "white" : "#222",
-                  fontSize: 12,
+                  fontSize: 10,
                 }}
               >
                 {tab.label}
@@ -151,8 +151,8 @@ const styles = StyleSheet.create({
   circle: {
     position: "absolute",
     top: 10,
-    width: 60,
-    height: 60,
+    width: 61,
+    height: 61,
     borderRadius: 30,
     backgroundColor: "#3d4a7a",
     justifyContent: "center",

@@ -2,67 +2,31 @@ import React, { useState } from "react";
 import {
   View,
   TextInput,
-  Button,
   FlatList,
   Text,
   TouchableOpacity,
   Image,
 } from "react-native";
-import { searchUsers, sendFriendRequest } from "@services/friendService";
-import { auth } from "../services/firebaseConfig";
+import AntDesign from "@expo/vector-icons/AntDesign";
+import { useSearchUsers } from "../hooks/useSearchUsers";
+import { useSendFriendRequest } from "../hooks/useSendFriendRequest";
 
 export default function SearchFriends() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [searchResults, setSearchResults] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSearch = async () => {
-    setIsLoading(true);
-    try {
-      const results = await searchUsers(searchTerm);
-      setSearchResults(results);
-    } catch (error) {
-      console.error("Error searching users:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleSendFriendRequest = async (
-    toUserId: string,
-    toUserPhotoURL: string
-  ) => {
-    const currentUserId = auth.currentUser?.uid;
-    if (!currentUserId) return;
-
-    try {
-      await sendFriendRequest(
-        currentUserId,
-        toUserId,
-        auth.currentUser?.displayName || "Unknown User",
-        auth.currentUser?.photoURL || toUserPhotoURL
-      );
-      alert("Friend request sent!");
-    } catch (error) {
-      console.error("Error sending friend request:", error);
-    }
-  };
+  const { searchResults, isLoading } = useSearchUsers(searchTerm);
+  const handleSendFriendRequest = useSendFriendRequest();
 
   return (
     <View>
-      <TextInput
-        placeholder="Search by username"
-        value={searchTerm}
-        onChangeText={setSearchTerm}
-        style={{
-          height: 40,
-          borderColor: "gray",
-          borderWidth: 1,
-          marginBottom: 10,
-          paddingHorizontal: 10,
-        }}
-      />
-      <Button title="Search" onPress={handleSearch} disabled={isLoading} />
+      <View className="flex-row items-center">
+        <TextInput
+          placeholder="Search by username"
+          value={searchTerm}
+          onChangeText={setSearchTerm}
+          className="text-lg font-[Poppins] flex-1"
+        />
+        <AntDesign name="right" size={24} color="black" />
+      </View>
 
       <FlatList
         data={searchResults}

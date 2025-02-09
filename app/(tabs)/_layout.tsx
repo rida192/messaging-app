@@ -5,7 +5,6 @@ const TabsNavigator = () => {
   return (
     <Tabs
       tabBar={(props) => <CustomTabBar {...props} />}
-
       // screenOptions={{
       //   tabBarStyle: {
       //     position: "absolute",
@@ -14,26 +13,11 @@ const TabsNavigator = () => {
       //     height: 30,
       //   },
       // }}
-      // screenOptions={{ headerShown: false }} // Hide header for all screens
+      screenOptions={{ headerShown: false }} // Hide header for all screens
     >
-      <Tabs.Screen
-        name="chats"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="profile"
-        options={{
-          headerShown: false,
-        }}
-      />
-      <Tabs.Screen
-        name="friends"
-        options={{
-          title: "Friends",
-        }}
-      />
+      <Tabs.Screen name="chats" />
+      <Tabs.Screen name="profile" />
+      <Tabs.Screen name="connections" />
     </Tabs>
   );
 };

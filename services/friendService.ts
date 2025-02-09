@@ -270,6 +270,22 @@ const getActiveChatId = async (userId: string) => {
   return null;
 };
 
+const handleAcceptFriendRequest = async (requestId, fromUserId, toUserId) => {
+  try {
+    await acceptFriendRequest(requestId, fromUserId, toUserId);
+  } catch (error) {
+    console.error("Error accepting friend request:", error);
+  }
+};
+
+const handleRejectFriendRequest = async (requestId) => {
+  try {
+    await rejectFriendRequest(requestId);
+  } catch (error) {
+    console.error("Error rejecting friend request:", error);
+  }
+};
+
 export {
   sendFriendRequest,
   acceptFriendRequest,
@@ -282,4 +298,6 @@ export {
   fetchFriendsWithLastMessages,
   updateActiveChatId,
   getActiveChatId,
+  handleAcceptFriendRequest,
+  handleRejectFriendRequest,
 };
