@@ -42,19 +42,19 @@ const MainTabScreen: React.FC = () => {
         const timestampA =
           a.lastMessageTimestamp instanceof Date
             ? a.lastMessageTimestamp
-            : a.lastMessageTimestamp.toDate();
+            : a.lastMessageTimestamp?.toDate();
         const timestampB =
           b.lastMessageTimestamp instanceof Date
             ? b.lastMessageTimestamp
-            : b.lastMessageTimestamp.toDate();
-        return timestampB.getTime() - timestampA.getTime(); // Sort in descending order
+            : b.lastMessageTimestamp?.toDate();
+        return timestampB?.getTime() - timestampA?.getTime(); // Sort in descending order
       })
     : [];
 
   return (
     <View className="flex-1">
       <Header user={user} title="Home" />
-      <View className="flex-1 bg-white rounded-t-[60px] mt-[-60px] px-6 py-10">
+      <View className="flex-1 bg-white rounded-t-[60px] mt-[-60px] px-4 py-10">
         <Animated.FlatList
           data={sortedFriends} // Use the sorted friends list
           keyExtractor={(item) => item.id}

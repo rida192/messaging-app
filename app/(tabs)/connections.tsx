@@ -4,7 +4,6 @@ import {
   Text,
   FlatList,
   Image,
-  ActivityIndicator,
   StyleSheet,
   TouchableOpacity,
 } from "react-native";
@@ -23,7 +22,6 @@ const GradientBackground = styled(LinearGradient);
 
 const ConnectionsTabScreen = () => {
   const [friendRequests, setFriendRequests] = useState<FriendRequest[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const unsubscribeFriendRequests = listenToFriendRequests((requests) => {
@@ -31,27 +29,13 @@ const ConnectionsTabScreen = () => {
         (req) => req.status === "pending"
       );
       setFriendRequests(pendingRequests);
-      setIsLoading(false);
     });
-
-    // const unsubscribeFriends = listenToFriends((friendsList) => {
-    //   setFriends(friendsList);
-    //   setIsLoading(false);
-    // });
 
     return () => {
       if (unsubscribeFriendRequests) unsubscribeFriendRequests();
       // if (unsubscribeFriends) unsubscribeFriends();
     };
   }, []);
-
-  if (isLoading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#0000ff" />
-      </View>
-    );
-  }
 
   return (
     <View className="flex-1">

@@ -3,7 +3,6 @@ import { auth, db } from "../services/firebaseConfig";
 import {
   collection,
   addDoc,
-  Timestamp,
   updateDoc,
   doc,
   setDoc,
@@ -12,7 +11,9 @@ import {
   where,
   onSnapshot,
   getDoc,
+  deleteDoc,
 } from "firebase/firestore";
+import { generateChatId } from "@utils/index";
 
 const sendFriendRequest = async (
   fromUserId: string,
@@ -286,6 +287,49 @@ const handleRejectFriendRequest = async (requestId) => {
   }
 };
 
+const deleteFriend = async (userId, friendId) => {
+  try {
+    // Delete friend from the current user's friend list
+    const userFriendRef = doc(db, `users/${userId}/friends/${friendId}`);
+    await deleteDoc(userFriendRef);
+
+    // Delete the current user from the friend's friend list
+    const friendFriendRef = doc(db, `users/${friendId}/friends/${userId}`);
+    await deleteDoc(friendFriendRef);
+  } catch (error) {
+    throw new Error("Failed to delete friend: " + error.message);
+  }
+};
+
+const deleteChat = async (userId, friendId) => {
+  try {
+    // Generate chat ID (ensure it matches how you create chat IDs)
+    const chatId = generateChatId(userId, friendId);
+
+    // Reference to the chat document
+    const chatRef = doc(db, `chats/${chatId}`);
+
+    // Reference to the messages subcollection
+    const messagesRef = collection(db, `chats/${chatId}/messages`);
+
+    // Fetch all documents in the messages subcollection
+    const messagesSnapshot = await getDocs(messagesRef);
+
+    // Delete each message document in the subcollection
+    const deleteMessagesPromises = messagesSnapshot.docs.map((messageDoc) =>
+      deleteDoc(messageDoc.ref)
+    );
+
+    // Wait for all messages to be deleted
+    await Promise.all(deleteMessagesPromises);
+
+    // Delete the chat document
+    await deleteDoc(chatRef);
+  } catch (error) {
+    throw new Error("Failed to delete chat: " + error.message);
+  }
+};
+
 export {
   sendFriendRequest,
   acceptFriendRequest,
@@ -300,4 +344,6 @@ export {
   getActiveChatId,
   handleAcceptFriendRequest,
   handleRejectFriendRequest,
+  deleteChat,
+  deleteFriend,
 };

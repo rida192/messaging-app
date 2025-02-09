@@ -7,12 +7,17 @@ import { useEffect, useState } from "react";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "@services/firebaseConfig";
 import { generateChatId } from "@utils/index";
+import { Menu, Button, Dialog, Portal } from "react-native-paper";
+import { deleteChat, deleteFriend } from "@services/friendService";
+import Entypo from "@expo/vector-icons/Entypo";
 
-const FriendLable = ({ item }: { item: Friend }) => {
+const FriendLabel = ({ item }: { item: Friend }) => {
   const user = auth.currentUser;
   const { data: lastMessage } = useChat(user.uid, item.id);
   const router = useRouter();
-  const [unreadCount, setUnreadCount] = useState(0); // State for unread message count
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [menuVisible, setMenuVisible] = useState(false); // State to toggle menu visibility
+  const [dialogVisible, setDialogVisible] = useState(false); // State to toggle dialog visibility
 
   // Generate chat ID
   const chatId = generateChatId(user.uid, item.id);
@@ -23,22 +28,21 @@ const FriendLable = ({ item }: { item: Friend }) => {
     const unsubscribe = onSnapshot(chatDocRef, (doc) => {
       if (doc.exists()) {
         const data = doc.data();
-        // Extract the current user's unread count from the unreadCount object
         const currentUserUnreadCount = data.unreadCount?.[user.uid] || 0;
-        setUnreadCount(currentUserUnreadCount); // Update unread count
+        setUnreadCount(currentUserUnreadCount);
       }
     });
 
-    return () => unsubscribe(); // Cleanup listener on unmount
+    return () => unsubscribe();
   }, [chatId]);
 
-  // Clear unread count when the chat is opened
-  const handleOpenChat = async () => {
-    console.log("Opening chat with ID:", chatId);
+  // Handle menu toggle
+  const toggleMenu = () => setMenuVisible(!menuVisible);
 
+  // Handle opening chat
+  const handleOpenChat = async () => {
     const chatDocRef = doc(db, "chats", chatId);
     try {
-      // Navigate to the chat screen
       router.push({
         pathname: "/chats/[chatId]",
         params: {
@@ -47,76 +51,80 @@ const FriendLable = ({ item }: { item: Friend }) => {
           photoURL: item.photoURL,
         },
       });
-      console.log("Navigation to chat screen triggered.");
 
-      // Reset the unreadCount for the current user only
+      // Reset the unread count when the chat is opened
       await updateDoc(chatDocRef, {
-        [`unreadCount.${user.uid}`]: 0, // Reset only the current user's unread count
+        [`unreadCount.${user.uid}`]: 0,
       });
-      setUnreadCount(0); // Update local state
+      setUnreadCount(0);
     } catch (error) {
       console.error("Error opening chat:", error);
     }
   };
 
+  // Handle friend deletion
+  const handleDeleteFriend = async () => {
+    // const friendDocRef = doc(db, "friends", item.id); // Assuming friends are stored in a "friends" collection
+    try {
+      // Delete friend from both users' friend lists
+      await deleteFriend(user.uid, item.id);
+
+      // Delete the chat document between the two users
+      await deleteChat(user.uid, item.id);
+      setDialogVisible(false); // Close the dialog after deletion
+      alert("Friend deleted successfully");
+    } catch (error) {
+      console.error("Error deleting friend:", error);
+    }
+  };
+
   return (
-    <TouchableOpacity
-      className="bg-white"
-      onPress={handleOpenChat} // Use the new handler
-    >
+    <TouchableOpacity onPress={handleOpenChat}>
       <View className="flex-row gap-x-3 py-1">
         <Image
           source={{ uri: item.photoURL }}
           className="w-[52px] h-[52px] rounded-full"
         />
-
         <View className="flex-1 gap-y-2">
-          <Text className="text-xl font-[Poppins] font-medium text-[#000E08]">
+          <Text className="text-lg font-[Poppins] font-medium text-[#000E08]">
             {item.displayName}
           </Text>
-
           {lastMessage ? (
-            <View>
-              <Text className="text-[#797C7B] text-xs opacity-60 text-left">
-                {lastMessage.text}
-              </Text>
-            </View>
+            <Text className="text-[#797C7B] text-xs opacity-60 text-left">
+              {lastMessage.text}
+            </Text>
           ) : (
             <Text style={styles.noMessages}>No messages yet</Text>
           )}
         </View>
 
-        {/* Display Unread Message Counter */}
-
-        <View className=" justify-between items-center ">
+        <View className="justify-between items-center">
           {lastMessage && (
-            <View>
-              <Text style={styles.timestamp}>
-                {(() => {
-                  const messageDate = lastMessage.timestamp.toDate();
-                  const now = new Date();
-                  const yesterday = new Date(now);
-                  yesterday.setDate(yesterday.getDate() - 1);
+            <Text style={styles.timestamp}>
+              {(() => {
+                const messageDate = lastMessage.timestamp.toDate();
+                const now = new Date();
+                const yesterday = new Date(now);
+                yesterday.setDate(yesterday.getDate() - 1);
 
-                  if (messageDate.toDateString() === now.toDateString()) {
-                    return messageDate.toLocaleTimeString([], {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    });
-                  } else if (
-                    messageDate.toDateString() === yesterday.toDateString()
-                  ) {
-                    return "Yesterday";
-                  } else {
-                    return messageDate.toLocaleDateString([], {
-                      month: "numeric",
-                      day: "2-digit",
-                      year: "2-digit",
-                    });
-                  }
-                })()}
-              </Text>
-            </View>
+                if (messageDate.toDateString() === now.toDateString()) {
+                  return messageDate.toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+                } else if (
+                  messageDate.toDateString() === yesterday.toDateString()
+                ) {
+                  return "Yesterday";
+                } else {
+                  return messageDate.toLocaleDateString([], {
+                    month: "numeric",
+                    day: "2-digit",
+                    year: "2-digit",
+                  });
+                }
+              })()}
+            </Text>
           )}
 
           {unreadCount > 0 && (
@@ -125,45 +133,62 @@ const FriendLable = ({ item }: { item: Friend }) => {
             </View>
           )}
         </View>
+
+        {/* Menu for delete option */}
+        <Menu
+          visible={menuVisible}
+          onDismiss={toggleMenu}
+          anchor={
+            <TouchableOpacity
+              onPress={toggleMenu}
+              style={{
+                flex: 1,
+                justifyContent: "flex-end",
+              }}
+            >
+              <Entypo name="dots-three-vertical" size={18} color="gray" />
+            </TouchableOpacity>
+          }
+        >
+          <Menu.Item
+            onPress={() => setDialogVisible(true)}
+            title="Delete Friend"
+          />
+        </Menu>
+
+        {/* Confirmation Dialog for Deletion */}
+        <Portal>
+          <Dialog
+            visible={dialogVisible}
+            onDismiss={() => setDialogVisible(false)}
+            style={{ backgroundColor: "#fff" }}
+          >
+            <Dialog.Title style={{ color: "balck" }}>
+              Confirm Deletion
+            </Dialog.Title>
+            <Dialog.Content>
+              <Text>
+                Are you sure you want to remove {item.displayName} as a friend?
+              </Text>
+            </Dialog.Content>
+            <Dialog.Actions>
+              <Button onPress={() => setDialogVisible(false)}>
+                <Text className="text-black">Cancel</Text>
+              </Button>
+              <Button onPress={handleDeleteFriend}>
+                <Text className="text-red-500">Yes, Delete</Text>
+              </Button>
+            </Dialog.Actions>
+          </Dialog>
+        </Portal>
       </View>
     </TouchableOpacity>
   );
 };
 
-export default FriendLable;
+export default FriendLabel;
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 16,
-    backgroundColor: "#fff",
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
-  },
-  friendItem: {
-    padding: 16,
-    backgroundColor: "#f9f9f9",
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  friendDetails: {
-    marginLeft: 10,
-  },
-  friendName: {
-    fontSize: 18,
-    fontWeight: "bold",
-  },
-  lastMessage: {
-    fontSize: 14,
-    color: "#555",
-    marginTop: 4,
-  },
   timestamp: {
     fontSize: 12,
     color: "#888",
@@ -177,15 +202,12 @@ const styles = StyleSheet.create({
   unreadBadge: {
     width: 25,
     height: 25,
-    backgroundColor: "#3d4a7a", // Red badge
+    backgroundColor: "#3d4a7a", // Badge color
     borderRadius: 999,
     paddingHorizontal: 2,
     paddingVertical: 2,
     justifyContent: "center",
     alignItems: "center",
-    // position: "absolute", // Position the badge absolutely
-    // right: 0, // Align to the right
-    // top: 0, // Align to the top
   },
   unreadText: {
     color: "#fff",

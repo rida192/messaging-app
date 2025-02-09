@@ -61,16 +61,16 @@ const Layout = () => {
               </Text>
             </View>
           ),
-          headerRight: () => (
-            <View style={{ flexDirection: "row", gap: 30 }}>
-              <TouchableOpacity>
-                <Ionicons name="videocam-outline" size={30} />
-              </TouchableOpacity>
-              <TouchableOpacity>
-                <Ionicons name="call-outline" size={30} />
-              </TouchableOpacity>
-            </View>
-          ),
+          // headerRight: () => (
+          //   <View style={{ flexDirection: "row", gap: 30 }}>
+          //     <TouchableOpacity>
+          //       <Ionicons name="videocam-outline" size={30} />
+          //     </TouchableOpacity>
+          //     <TouchableOpacity>
+          //       <Ionicons name="call-outline" size={30} />
+          //     </TouchableOpacity>
+          //   </View>
+          // ),
         }}
       />
     </Stack>
