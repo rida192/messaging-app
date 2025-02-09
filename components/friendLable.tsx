@@ -6,6 +6,7 @@ import { useChat } from "../hooks/useChat";
 import { useEffect, useState } from "react";
 import { doc, onSnapshot, updateDoc } from "firebase/firestore";
 import { db } from "@services/firebaseConfig";
+import { generateChatId } from "@utils/index";
 
 const FriendLable = ({ item }: { item: Friend }) => {
   const user = auth.currentUser;
@@ -14,8 +15,7 @@ const FriendLable = ({ item }: { item: Friend }) => {
   const [unreadCount, setUnreadCount] = useState(0); // State for unread message count
 
   // Generate chat ID
-  const chatId =
-    user.uid < item.id ? `${user.uid}_${item.id}` : `${item.id}_${user.uid}`;
+  const chatId = generateChatId(user.uid, item.id);
 
   // Listen for unread messages
   useEffect(() => {
