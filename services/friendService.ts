@@ -1,3 +1,4 @@
+import { FriendRequest } from "../types";
 import { auth, db } from "../services/firebaseConfig";
 import {
   collection,
@@ -16,20 +17,21 @@ import {
 const sendFriendRequest = async (
   fromUserId: string,
   toUserId: string,
-  displayName: string
+  fromUserDisplayName: string,
+  fromUserPhotoURL: string
 ) => {
   try {
     const friendRequestsRef = collection(db, "friendRequests");
     await addDoc(friendRequestsRef, {
       fromUserId,
       toUserId,
-      displayName,
-      status: "pending", // The status can be 'pending', 'accepted', or 'rejected'
-      createdAt: Timestamp.now(),
+      fromUserDisplayName,
+      fromUserPhotoURL, // Include the photoURL
+      status: "pending",
+      timestamp: new Date(),
     });
-    console.log("Friend request sent");
   } catch (error) {
-    console.error("Error sending friend request:", error);
+    throw new Error("Failed to send friend request: " + error.message);
   }
 };
 
@@ -135,24 +137,29 @@ const searchUsers = async (searchTerm: string) => {
 };
 
 // Real-time function to get incoming friend requests
-const listenToFriendRequests = (onUpdate) => {
-  const currentUser = auth.currentUser;
+const listenToFriendRequests = (
+  onUpdate: (requests: FriendRequest[]) => void
+) => {
+  const currentUserId = auth.currentUser?.uid;
+  if (!currentUserId) return;
 
-  if (!currentUser) return;
+  const friendRequestsRef = collection(db, "friendRequests");
+  const q = query(friendRequestsRef, where("toUserId", "==", currentUserId));
 
-  const friendRequestsQuery = query(
-    collection(db, "friendRequests"),
-    where("toUserId", "==", currentUser.uid)
-  );
-
-  // Listen for real-time updates
-  return onSnapshot(friendRequestsQuery, (snapshot) => {
+  const unsubscribe = onSnapshot(q, (snapshot) => {
     const requests = snapshot.docs.map((doc) => ({
       id: doc.id,
-      ...doc.data(),
+      fromUserId: doc.data().fromUserId,
+      toUserId: doc.data().toUserId,
+      fromUserDisplayName: doc.data().fromUserDisplayName,
+      fromUserPhotoURL: doc.data().fromUserPhotoURL, // Include the photoURL
+      status: doc.data().status,
+      timestamp: doc.data().timestamp,
     }));
     onUpdate(requests);
   });
+
+  return unsubscribe;
 };
 
 // Real-time function to get the list of friends

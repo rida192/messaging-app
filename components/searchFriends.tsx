@@ -1,5 +1,3 @@
-// components/SearchFriends.tsx
-
 import React, { useState } from "react";
 import {
   View,
@@ -8,6 +6,7 @@ import {
   FlatList,
   Text,
   TouchableOpacity,
+  Image,
 } from "react-native";
 import { searchUsers, sendFriendRequest } from "@services/friendService";
 import { auth } from "../services/firebaseConfig";
@@ -29,7 +28,10 @@ export default function SearchFriends() {
     }
   };
 
-  const handleSendFriendRequest = async (toUserId: string) => {
+  const handleSendFriendRequest = async (
+    toUserId: string,
+    toUserPhotoURL: string
+  ) => {
     const currentUserId = auth.currentUser?.uid;
     if (!currentUserId) return;
 
@@ -37,7 +39,8 @@ export default function SearchFriends() {
       await sendFriendRequest(
         currentUserId,
         toUserId,
-        auth.currentUser?.displayName
+        auth.currentUser?.displayName || "Unknown User",
+        auth.currentUser?.photoURL || toUserPhotoURL
       );
       alert("Friend request sent!");
     } catch (error) {
@@ -70,10 +73,25 @@ export default function SearchFriends() {
               padding: 10,
               borderBottomWidth: 1,
               borderBottomColor: "#ccc",
+              flexDirection: "row",
+              alignItems: "center",
             }}
           >
-            <Text>{item.username}</Text>
-            <TouchableOpacity onPress={() => handleSendFriendRequest(item.id)}>
+            {item.photoURL && (
+              <Image
+                source={{ uri: item.photoURL }}
+                style={{
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
+                  marginRight: 10,
+                }}
+              />
+            )}
+            <Text style={{ flex: 1 }}>{item.username}</Text>
+            <TouchableOpacity
+              onPress={() => handleSendFriendRequest(item.id, item.photoURL)}
+            >
               <Text style={{ color: "blue" }}>Send Friend Request</Text>
             </TouchableOpacity>
           </View>

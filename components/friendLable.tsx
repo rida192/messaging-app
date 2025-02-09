@@ -38,12 +38,6 @@ const FriendLable = ({ item }: { item: Friend }) => {
 
     const chatDocRef = doc(db, "chats", chatId);
     try {
-      // Reset the unreadCount for the current user only
-      await updateDoc(chatDocRef, {
-        [`unreadCount.${user.uid}`]: 0, // Reset only the current user's unread count
-      });
-      setUnreadCount(0); // Update local state
-
       // Navigate to the chat screen
       router.push({
         pathname: "/chats/[chatId]",
@@ -54,6 +48,12 @@ const FriendLable = ({ item }: { item: Friend }) => {
         },
       });
       console.log("Navigation to chat screen triggered.");
+
+      // Reset the unreadCount for the current user only
+      await updateDoc(chatDocRef, {
+        [`unreadCount.${user.uid}`]: 0, // Reset only the current user's unread count
+      });
+      setUnreadCount(0); // Update local state
     } catch (error) {
       console.error("Error opening chat:", error);
     }
